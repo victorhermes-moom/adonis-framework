@@ -34,33 +34,33 @@ test.group('Env', (group) => {
     /**
      * Setup
      */
-    await createEnvFile({ username: 'virk' }, '.env')
+    await createEnvFile({ APP_USERNAME: 'virk' }, '.env')
 
     const env = new Env(appRoot())
-    assert.equal(env.get('username'), 'virk')
+    assert.equal(env.get('APP_USERNAME'), 'virk')
 
     /**
      * Cleanup
      */
     await removeFile('.env')
-    delete process.env.username
+    delete process.env.APP_USERNAME
   })
 
   test('do not overwrite existing process.env values', async (assert) => {
     /**
      * Setup
      */
-    process.env.username = 'virk'
-    await createEnvFile({ username: 'nikk' }, '.env')
+    process.env.APP_USERNAME = 'virk'
+    await createEnvFile({ APP_USERNAME: 'nikk' }, '.env')
 
     const env = new Env(appRoot())
-    assert.equal(env.get('username'), 'virk')
+    assert.equal(env.get('APP_USERNAME'), 'virk')
 
     /**
      * Cleanup
      */
     await removeFile('.env')
-    delete process.env.username
+    delete process.env.APP_USERNAME
   })
 
   test('cast string true to boolean true', async (assert) => {
@@ -167,16 +167,16 @@ test.group('Env', (group) => {
     /**
      * Setup
      */
-    await createEnvFile({ username: 'virk' }, '.secrets')
+    await createEnvFile({ APP_USERNAME: 'virk' }, '.secrets')
     process.env.ENV_PATH = '.secrets'
 
     const env = new Env(appRoot())
-    assert.equal(env.getOrFail('username'), 'virk')
+    assert.equal(env.getOrFail('APP_USERNAME'), 'virk')
 
     /**
      * Cleanup
      */
-    delete process.env.username
+    delete process.env.APP_USERNAME
     delete process.env.ENV_PATH
     await removeFile('.secrets')
   })
@@ -186,16 +186,16 @@ test.group('Env', (group) => {
      * Setup
      */
     const secretsFile = join(__dirname, '.secrets')
-    await createEnvFile({ username: 'nikk' }, secretsFile)
+    await createEnvFile({ APP_USERNAME: 'nikk' }, secretsFile)
     process.env.ENV_PATH = secretsFile
 
     const env = new Env(appRoot())
-    assert.equal(env.getOrFail('username'), 'nikk')
+    assert.equal(env.getOrFail('APP_USERNAME'), 'nikk')
 
     /**
      * Cleanup
      */
-    delete process.env.username
+    delete process.env.APP_USERNAME
     delete process.env.ENV_PATH
     await removeFile(secretsFile)
   })
@@ -204,17 +204,17 @@ test.group('Env', (group) => {
     /**
      * Setup
      */
-    await createEnvFile({ username: 'nikk' }, '.env')
-    await createEnvFile({ username: 'virk' }, '.env.testing')
+    await createEnvFile({ APP_USERNAME: 'nikk' }, '.env')
+    await createEnvFile({ APP_USERNAME: 'virk' }, '.env.testing')
     process.env.NODE_ENV = 'testing'
 
     const env = new Env(appRoot())
-    assert.equal(env.getOrFail('username'), 'virk')
+    assert.equal(env.getOrFail('APP_USERNAME'), 'virk')
 
     /**
      * Cleanup
      */
-    delete process.env.username
+    delete process.env.APP_USERNAME
     delete process.env.NODE_ENV
     await removeFile('.env')
     await removeFile('.env.testing')
