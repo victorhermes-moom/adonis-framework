@@ -20,6 +20,9 @@ import { IEnv } from '../Interfaces/IEnv'
 import { trySync } from '../../lib/utils'
 import { MissingEnvFileException } from '../Exceptions'
 
+import Debug from 'debug'
+const debug = Debug('adonis:env')
+
 /**
  * The ENV module enables the use of environment variables by loading different `.env` files.
  * In development and production, the module will look for `.env` file inside the project
@@ -74,6 +77,8 @@ export class Env implements IEnv {
    */
   private _load (filePath: string, overwrite: boolean): { error: Error | null } {
     const absPath = isAbsolute(filePath) ? filePath : join(this._appRoot, filePath)
+    debug('load env file from %s', absPath)
+    debug('overwrite %s', overwrite)
 
     /**
      * Read file synchronously

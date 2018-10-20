@@ -9,6 +9,7 @@
 
 import { join, isAbsolute } from 'path'
 import { outputFile, remove } from 'fs-extra'
+import * as clearRequire from 'clear-require'
 
 export function appRoot () {
   return join(__dirname, './app')
@@ -26,9 +27,19 @@ export async function createEnvFile (values, filePath = '.env') {
 
 export async function removeFile (filePath) {
   filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
+
+  if (filePath.endsWith('.js') || filePath.endsWith('.ts')) {
+    clearRequire(filePath)
+  }
+
   await remove(filePath)
 }
 
 export async function removeAppRoot () {
   await remove(this.appRoot())
+}
+
+export async function createFile (filePath, contents) {
+  filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
+  await outputFile(filePath, contents)
 }
