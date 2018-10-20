@@ -1,7 +1,6 @@
-'use strict'
+require('ts-node/register')
 
 const { configure } = require('japa')
-
 configure({
-  files: 'test/**/*.js'
+  files: ['test/**/*.spec.ts']
 })
