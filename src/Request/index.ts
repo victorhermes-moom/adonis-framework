@@ -43,6 +43,7 @@ export class Request implements IRequest {
   private _all: any = {}
   private _original: any = {}
   private _qs: any = {}
+  private _raw: string | null = null
   private _trustFn = proxyaddr.compile(this._config.get(TRUST_PROXY, 'loopback'))
   private _lazyAccepts: any = null
 
@@ -92,6 +93,14 @@ export class Request implements IRequest {
   }
 
   /**
+   * Update the request raw body. Bodyparser sets this when unable to parse
+   * the request body or when request is multipart/form-data.
+   */
+  public updateRawBody (rawBody: string) {
+    this._raw = rawBody
+  }
+
+  /**
    * Update the query string with the new data object. The `all` property
    * will be re-computed by merging the query and the request body.
    */
@@ -128,6 +137,16 @@ export class Request implements IRequest {
    */
   public original (): { [key: string]: any } {
     return this._original
+  }
+
+  /**
+   * Returns the request raw body (if exists), or returns `null`.
+   *
+   * Ideally you must be dealing with the parsed body accessed using [[input]], [[all]] or
+   * [[post]] methods. The `raw` body is always a string.
+   */
+  public raw (): string | null {
+    return this._raw
   }
 
   /**

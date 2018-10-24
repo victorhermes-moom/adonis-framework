@@ -14,11 +14,15 @@
 import { IncomingHttpHeaders } from 'http'
 
 export interface IRequest {
+  setInitialBody (body: any): void
+  updateBody (body: any): void
+  updateRawBody (body: string): void
+  updateQs (data: any): void
   get (): { [key: string]: string | string[] }
   post (): { [key: string]: string | string[] }
   original (): { [key: string]: string | string[] }
   all (): { [key: string]: string | string[] }
-  // raw (): any
+  raw (): string | null
   input (key: string, defaultValue?: any): any
   except (keys: string[]): { [key: string]: string | string[] }
   only (keys: string[]): { [key: string]: string | string[] }
