@@ -13,7 +13,7 @@ import { join } from 'path'
 import { Config } from '../../src/Config'
 import { appRoot, removeAppRoot, createFile, removeFile } from '../../test-utils'
 
-test.group('Env', (group) => {
+test.group('Config', (group) => {
   group.after(async () => {
     await removeAppRoot()
   })

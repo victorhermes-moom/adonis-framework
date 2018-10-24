@@ -10,6 +10,10 @@
 import { join, isAbsolute } from 'path'
 import { outputFile, remove } from 'fs-extra'
 import * as clearRequire from 'clear-require'
+import * as http from 'http'
+import { get, set } from 'lodash'
+
+import { IConfig } from '../src/Interfaces/IConfig'
 
 export function appRoot () {
   return join(__dirname, './app')
@@ -42,4 +46,26 @@ export async function removeAppRoot () {
 export async function createFile (filePath, contents) {
   filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
   await outputFile(filePath, contents)
+}
+
+export function httpServer (handler) {
+  return http.createServer(handler)
+}
+
+export function fakeConfig (): IConfig {
+  class Config implements IConfig {
+    private _configCache = {}
+
+    public get (key, defaultValue) {
+      return get(this._configCache, key, defaultValue)
+    }
+
+    public set (key, value) {
+      set(this._configCache, key, value)
+    }
+    public sync () {}
+    public merge () {}
+  }
+
+  return new Config()
 }
