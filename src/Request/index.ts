@@ -29,6 +29,12 @@ const GET_IP = 'app.http.getIp'
 const SUBDOMAIN_OFFSET = 'app.http.subdomainOffset'
 
 /**
+ * Pre-compile the proxy address trust function as soon as first
+ * instance of Request class is created
+ */
+let trustFn = null
+
+/**
  * HTTP Request class exposes the interface to consistently read values
  * related to a given HTTP request. The class is wrapper over
  * [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
@@ -45,10 +51,13 @@ export class Request implements IRequest {
   private _original: any = {}
   private _qs: any = {}
   private _raw: string | null = null
-  private _trustFn = proxyaddr.compile(this._config.get(TRUST_PROXY, 'loopback'))
   private _lazyAccepts: any = null
 
   constructor (public request: IncomingMessage, public response: ServerResponse, private _config: IConfig) {
+    if (!trustFn) {
+      trustFn = proxyaddr.compile(this._config.get(TRUST_PROXY, 'loopback'))
+    }
+
     this.updateQs(qs.parse(this.parsedUrl.query))
     this._original = { ...this._all }
   }
@@ -287,7 +296,7 @@ export class Request implements IRequest {
       return ipFn(this)
     }
 
-    return proxyaddr(this.request, this._trustFn)
+    return proxyaddr(this.request, trustFn)
   }
 
   /**
@@ -309,7 +318,7 @@ export class Request implements IRequest {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public ips (): string[] {
-    return proxyaddr.all(this.request, this._trustFn)
+    return proxyaddr.all(this.request, trustFn)
   }
 
   /**
@@ -334,7 +343,7 @@ export class Request implements IRequest {
    */
   public protocol (): string {
     const protocol = this.parsedUrl.protocol!
-    if (!this._trustFn(this.request.connection.remoteAddress, 0)) {
+    if (!(trustFn as any)(this.request.connection.remoteAddress, 0)) {
       return protocol
     }
 
@@ -375,7 +384,7 @@ export class Request implements IRequest {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (this._trustFn(this.request.connection.remoteAddress, 0)) {
+    if ((trustFn as any)(this.request.connection.remoteAddress, 0)) {
       host = this.header('X-Forwarded-Host') || host
     }
 
