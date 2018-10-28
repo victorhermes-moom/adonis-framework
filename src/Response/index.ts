@@ -149,7 +149,7 @@ export class Response implements IResponse {
      * unique etag based on body
      */
     if (generateEtag) {
-      this.header('Etag', etag(body))
+      this.setEtag(body)
     }
 
     /**
@@ -289,6 +289,17 @@ export class Response implements IResponse {
    */
   public vary (field: string): this {
     vary(this.response, field)
+    return this
+  }
+
+  /**
+   * Set etag by computing hash from the body. AdonisJs will set the etag automatically
+   * when `app.http.etag = true` inside the config file.
+   *
+   * Use this function, when you want to compute etag manually for some other resons.
+   */
+  public setEtag (body: any, weak: boolean = false) : this {
+    this.header('Etag', etag(body, { weak }))
     return this
   }
 
@@ -539,7 +550,7 @@ export class Response implements IResponse {
         return this.stream(createReadStream(filePath), raiseErrors)
       }
 
-      this.header('Etag', etag(stats, { weak: true }))
+      this.setEtag(stats, true)
       const fresh = this.request.fresh()
 
       /**

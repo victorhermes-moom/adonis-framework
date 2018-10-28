@@ -37,6 +37,7 @@ export interface IResponse {
   status (code: number): this
   type (type: string, charset?: string): this
   vary (field: string): this
+  setEtag (body: any, weak?: boolean): this
 
   buildResponseBody (body: any): { body: any, type: IResponseContentType }
   send (body: any, generateEtag?: boolean): void
