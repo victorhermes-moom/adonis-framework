@@ -811,7 +811,7 @@ test.group('Response', (group) => {
     class User {
       public toJSON () {
         return {
-          username: 'virk'
+          username: 'virk',
         }
       }
     }
