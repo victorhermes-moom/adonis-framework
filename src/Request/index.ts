@@ -426,12 +426,8 @@ export class Request implements IRequest {
    * or not.
    */
   public ajax (): boolean {
-    const xRequestedWith = this.header('X-Requested-With')
-    if (!xRequestedWith) {
-      return false
-    }
-
-    return xRequestedWith.toLowerCase() === 'xmlhttprequest'
+    const xRequestedWith = this.header('X-Requested-With', '')
+    return xRequestedWith!.toLowerCase() === 'xmlhttprequest'
   }
 
   /**

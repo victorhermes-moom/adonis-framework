@@ -371,6 +371,19 @@ test.group('Request', () => {
     })
   })
 
+  test('return false for ajax when X-Requested-With header is missing', async (assert) => {
+    const server = httpServer((req, res) => {
+      const request = new Request(req, res, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ajax: request.ajax() }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      ajax: false,
+    })
+  })
+
   test('return true for ajax when X-Pjax header is set', async (assert) => {
     const server = httpServer((req, res) => {
       const request = new Request(req, res, fakeConfig())
@@ -710,6 +723,63 @@ test.group('Request', () => {
     const { body } = await supertest(server).get('/').set('if-none-match', 'foo')
     assert.deepEqual(body, {
       stale: false,
+    })
+  })
+
+  test('handle referer header spelling inconsistencies', async (assert) => {
+    const server = httpServer((req, res) => {
+      const request = new Request(req, res, fakeConfig())
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ referrer: request.header('referrer'), referer: request.header('referer') }))
+    })
+
+    const { body } = await supertest(server).get('/').set('referer', 'foo.com')
+    assert.deepEqual(body, {
+      referrer: 'foo.com',
+      referer: 'foo.com',
+    })
+  })
+
+  test('update request raw body', async (assert) => {
+    const server = httpServer((req, res) => {
+      const request = new Request(req, res, fakeConfig())
+      request.updateRawBody(JSON.stringify({ username: 'virk' }))
+      res.writeHead(200, { 'content-type': 'text/plain' })
+      res.end(request.raw())
+    })
+
+    const { text } = await supertest(server).get('/')
+    assert.deepEqual(JSON.parse(text), { username: 'virk' })
+  })
+
+  test('get null when request hostname is missing', async (assert) => {
+    const server = httpServer((req, res) => {
+      const request = new Request(req, res, fakeConfig())
+      delete req.headers['host']
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hostname: request.hostname() }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      hostname: null,
+    })
+  })
+
+  test('get empty array when for subdomains request hostname is missing', async (assert) => {
+    const server = httpServer((req, res) => {
+      const request = new Request(req, res, fakeConfig())
+      delete req.headers['host']
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ subdomains: request.subdomains() }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      subdomains: [],
     })
   })
 })
