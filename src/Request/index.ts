@@ -38,7 +38,8 @@ const SUBDOMAIN_OFFSET = 'app.http.subdomainOffset'
  * using `request.request` property.
  */
 export class Request implements IRequest {
-  private _parsedUrl: UrlWithStringQuery = parse(this.request.url!, false)
+  public parsedUrl: UrlWithStringQuery = parse(this.request.url!, false)
+
   private _body: any = {}
   private _all: any = {}
   private _original: any = {}
@@ -48,7 +49,7 @@ export class Request implements IRequest {
   private _lazyAccepts: any = null
 
   constructor (public request: IncomingMessage, public response: ServerResponse, private _config: IConfig) {
-    this.updateQs(qs.parse(this._parsedUrl.query))
+    this.updateQs(qs.parse(this.parsedUrl.query))
     this._original = { ...this._all }
   }
 
@@ -332,7 +333,7 @@ export class Request implements IRequest {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public protocol (): string {
-    const protocol = this._parsedUrl.protocol!
+    const protocol = this.parsedUrl.protocol!
     if (!this._trustFn(this.request.connection.remoteAddress, 0)) {
       return protocol
     }
@@ -453,8 +454,8 @@ export class Request implements IRequest {
    * ```
    */
   public url (includeQueryString?: boolean): string {
-    const pathname = this._parsedUrl.pathname!
-    return includeQueryString ? `${pathname}?${this._parsedUrl.query}` : pathname
+    const pathname = this.parsedUrl.pathname!
+    return includeQueryString ? `${pathname}?${this.parsedUrl.query}` : pathname
   }
 
   /**

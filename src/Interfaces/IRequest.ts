@@ -11,9 +11,11 @@
 * file that was distributed with this source code.
 */
 
+import { UrlWithStringQuery } from 'url'
 import { IncomingHttpHeaders } from 'http'
 
 export interface IRequest {
+  parsedUrl: UrlWithStringQuery
   setInitialBody (body: any): void
   updateBody (body: any): void
   updateRawBody (body: string): void
