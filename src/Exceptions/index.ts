@@ -19,3 +19,10 @@ export class MissingEnvFileException extends RuntimeException {
     return new this(message, 500, 'E_MISSING_ENV_FILE')
   }
 }
+
+export class MissingAppKey extends RuntimeException {
+  public static invoke () {
+    const message = 'Make sure to define appKey inside config/app.js file'
+    return new this(message, 500, 'E_MISSING_APP_KEY')
+  }
+}
