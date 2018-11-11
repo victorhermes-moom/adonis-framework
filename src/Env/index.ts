@@ -74,6 +74,9 @@ export class Env implements IEnv {
   /**
    * Load the file for the given path and parse it's content as env file. This
    * method will patch `process.env` directly.
+   *
+   * In case of errors, it will be returned as a property `erorr` on the return
+   * type. This is done to keep the interface same as `dotenv` module.
    */
   private _load (filePath: string, overwrite: boolean): { error: Error | null } {
     const absPath = isAbsolute(filePath) ? filePath : join(this._appRoot, filePath)

@@ -10,7 +10,7 @@
 import * as test from 'japa'
 import * as supertest from 'supertest'
 import { join } from 'path'
-import { createReadStream, stat } from 'fs-extra'
+import { createReadStream, createWriteStream, stat } from 'fs-extra'
 import * as etag from 'etag'
 
 import { Response } from '../../src/Response'
@@ -68,6 +68,35 @@ test.group('Response', (group) => {
 
       response.header('set-cookie', 'username=virk')
       response.append('set-cookie', 'age=22')
+      res.end()
+    })
+
+    const { headers } = await supertest(server).get('/')
+    assert.deepEqual(headers['set-cookie'], ['username=virk', 'age=22'])
+  })
+
+  test('add header via append when header doesn\'t exists already', async (assert) => {
+    const server = httpServer((req, res) => {
+      const config = fakeConfig()
+      const request = new Request(req, res, config)
+      const response = new Response(request, res, config)
+
+      response.append('set-cookie', 'age=22')
+      res.end()
+    })
+
+    const { headers } = await supertest(server).get('/')
+    assert.deepEqual(headers['set-cookie'], ['age=22'])
+  })
+
+  test('append to the header value when it\'s an array', async (assert) => {
+    const server = httpServer((req, res) => {
+      const config = fakeConfig()
+      const request = new Request(req, res, config)
+      const response = new Response(request, res, config)
+
+      response.append('set-cookie', ['username=virk'])
+      response.append('set-cookie', ['age=22'])
       res.end()
     })
 
@@ -409,6 +438,48 @@ test.group('Response', (group) => {
      * Cleanup
      */
     await removeFile('hello.txt')
+  })
+
+  test('raise error when input is not a stream', async (assert) => {
+    assert.plan(1)
+
+    const server = httpServer((req, res) => {
+      const config = fakeConfig()
+      config.set('app.http.jsonpCallback', 'cb')
+      const request = new Request(req, res, config)
+      const response = new Response(request, res, config)
+
+      try {
+        const stream = response.stream as any
+        stream('hello', true)
+      } catch ({ message }) {
+        assert.equal(message, 'response.stream accepts a readable stream only')
+        res.end()
+      }
+    })
+
+    await supertest(server).get('/')
+  })
+
+  test('raise error when input is not a readable stream', async (assert) => {
+    assert.plan(1)
+
+    const server = httpServer(async (req, res) => {
+      const config = fakeConfig()
+      config.set('app.http.jsonpCallback', 'cb')
+      const request = new Request(req, res, config)
+      const response = new Response(request, res, config)
+
+      try {
+        const stream = response.stream as any
+        await stream(createWriteStream(join(appRoot(), 'hello.txt')), true)
+      } catch ({ message }) {
+        assert.equal(message, 'response.stream accepts a readable stream only')
+        res.end()
+      }
+    })
+
+    await supertest(server).get('/')
   })
 
   test('should not hit the maxListeners when making more than 10 calls', async () => {

@@ -142,6 +142,8 @@ test.group('Config', (group) => {
   })
 
   test('raise error when config file has syntax errors', async (assert) => {
+    assert.plan(2)
+
     /**
      * Setup
      */
@@ -151,8 +153,12 @@ test.group('Config', (group) => {
       }
     }`)
 
-    const config = () => new Config(join(appRoot(), 'config'), ['js'])
-    assert.throw(config, 'Invalid or unexpected token')
+    try {
+      new Config(join(appRoot(), 'config'), ['js'])
+    } catch ({ message, stack }) {
+      assert.equal(message, 'Invalid or unexpected token')
+      assert.isTrue(stack.split('\n')[0].endsWith('app.js:3'))
+    }
 
     /**
      * Cleanup

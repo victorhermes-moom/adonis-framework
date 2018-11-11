@@ -111,6 +111,10 @@ export class Response implements IResponse {
   private _writeBody (content: any, generateEtag: boolean, jsonpCallback?: string): void {
     let { type, body, originalType } = this.buildResponseBody(content)
 
+    /**
+     * Send 204 and remove content headers when body
+     * is null
+     */
     if (body === null) {
       this.status(204)
       this.removeHeader('Content-Type')
@@ -120,10 +124,16 @@ export class Response implements IResponse {
       return
     }
 
+    /**
+     * Unknown types are not serializable
+     */
     if (type === 'unknown') {
       throw new Error(`Cannot send ${originalType} as HTTP response`)
     }
 
+    /**
+     * In case of 204, 304, remove unwanted headers
+     */
     if ([204, 304].indexOf(this.response.statusCode) > -1) {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
@@ -434,7 +444,7 @@ export class Response implements IResponse {
    * ```
    */
   public stream (body: IReadableStream, raiseErrors: boolean = false): Promise<Error | void> {
-    if (typeof (body.pipe) !== 'function') {
+    if (typeof (body.pipe) !== 'function' || !body.readable || typeof (body.read) !== 'function') {
       throw new Error('response.stream accepts a readable stream only')
     }
 
