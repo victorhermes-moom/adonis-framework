@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-import { IConfig } from '../Interfaces/IConfig'
+import { IConfig } from '../Contracts/IConfig'
 import * as requireAll from 'require-all'
 import { get, set, mergeWith } from 'lodash'
 

@@ -16,7 +16,7 @@ import { readFileSync } from 'fs'
 import * as dotenv from 'dotenv'
 import { RuntimeException } from '@adonisjs/generic-exceptions'
 
-import { IEnv } from '../Interfaces/IEnv'
+import { IEnv } from '../Contracts/IEnv'
 import { trySync } from '../../lib/utils'
 import { MissingEnvFileException } from '../Exceptions'
 

@@ -12,8 +12,6 @@
 */
 
 import { parse, UrlWithStringQuery } from 'url'
-import { IRequest } from '../Interfaces/IRequest'
-import { IConfig } from '../Interfaces/IConfig'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 import { get, omit, pick } from 'lodash'
 import * as qs from 'qs'
@@ -22,6 +20,10 @@ import { isIP } from 'net'
 import * as typeIs from 'type-is'
 import * as accepts from 'accepts'
 import * as fresh from 'fresh'
+import { Macroable } from 'macroable'
+
+import { IRequest } from '../Contracts/IRequest'
+import { IConfig } from '../Contracts/IConfig'
 
 const ALLOW_METHOD_SPOOFING = 'app.http.allowMethodSpoofing'
 const TRUST_PROXY = 'app.http.trustProxy'
@@ -43,7 +45,7 @@ let trustFn = null
  * You can access the original [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
  * using `request.request` property.
  */
-export class Request implements IRequest {
+export class Request extends Macroable implements IRequest {
   public parsedUrl: UrlWithStringQuery = parse(this.request.url!, false)
 
   private _body: any = {}
@@ -53,7 +55,12 @@ export class Request implements IRequest {
   private _raw: string | null = null
   private _lazyAccepts: any = null
 
+  protected static _macros = {}
+  protected static _getters = {}
+
   constructor (public request: IncomingMessage, public response: ServerResponse, private _config: IConfig) {
+    super()
+
     if (!trustFn) {
       trustFn = proxyaddr.compile(this._config.get(TRUST_PROXY, 'loopback'))
     }

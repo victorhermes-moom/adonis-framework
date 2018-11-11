@@ -13,7 +13,7 @@ import * as clearRequire from 'clear-require'
 import * as http from 'http'
 import { get, set } from 'lodash'
 
-import { IConfig } from '../src/Interfaces/IConfig'
+import { IConfig } from '../src/Contracts/IConfig'
 
 export function appRoot () {
   return join(__dirname, './app')

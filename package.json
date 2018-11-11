@@ -64,6 +64,7 @@
     "fs-extra": "^7.0.0",
     "http-status-codes": "^1.3.0",
     "lodash": "^4.17.11",
+    "macroable": "^2.0.0",
     "mime-types": "^2.1.21",
     "on-finished": "^2.3.0",
     "proxy-addr": "^2.0.4",

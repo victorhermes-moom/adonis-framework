@@ -21,9 +21,9 @@ import * as mime from 'mime-types'
 import * as contentDisposition from 'content-disposition'
 import * as vary from 'vary'
 
-import { IRequest } from '../Interfaces/IRequest'
-import { IConfig } from '../Interfaces/IConfig'
-import { IResponse, ICastableHeader, IResponseContentType, IReadableStream } from '../Interfaces/IResponse'
+import { IRequest } from '../Contracts/IRequest'
+import { IConfig } from '../Contracts/IConfig'
+import { IResponse, ICastableHeader, IResponseContentType, IReadableStream } from '../Contracts/IResponse'
 
 const ETAG = 'app.http.etag'
 const JSONP_CALLBACK = 'app.http.jsonpCallback'
