@@ -72,11 +72,15 @@ export function fakeConfig (): IConfig {
 }
 
 export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
-  return Object.assign({
+  const finalRoute = Object.assign({
     handler: function handler () {},
     pattern: 'foo/:bar',
     patternMatchers: {},
     domain: 'root',
     methods: ['GET'],
+    name: '',
   }, route)
+
+  finalRoute.name = finalRoute.name || finalRoute.pattern
+  return finalRoute
 }
