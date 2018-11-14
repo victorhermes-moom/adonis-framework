@@ -14,6 +14,7 @@ import * as http from 'http'
 import { get, set } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
+import { IRouteJSON } from '../src/Contracts/IRoute'
 
 export function appRoot () {
   return join(__dirname, './app')
@@ -68,4 +69,14 @@ export function fakeConfig (): IConfig {
   }
 
   return new Config()
+}
+
+export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
+  return Object.assign({
+    handler: function handler () {},
+    pattern: 'foo/:bar',
+    patternMatchers: {},
+    domain: 'root',
+    methods: ['GET'],
+  }, route)
 }

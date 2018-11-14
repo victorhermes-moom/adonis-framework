@@ -26,3 +26,10 @@ export class MissingAppKey extends RuntimeException {
     return new this(message, 500, 'E_MISSING_APP_KEY')
   }
 }
+
+export class InvalidRoute extends RuntimeException {
+  public static duplicateName (name) {
+    const message = `Duplicate route ${name}. Make sure to give routes a unique name or pattern`
+    return new this(message, 500, 'E_DUPLICATE_ROUTE')
+  }
+}
