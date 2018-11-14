@@ -2,14 +2,14 @@
  * @module http
  */
 
-/*
-* adonis-framework
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/framework
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /**
  * Defining route handler as a Controller.method
@@ -36,6 +36,7 @@ export type IRoutePatternMatcher = {
  * request
  */
 export type IRouteJSON = {
+  name: string,
   pattern: string,
   methods: string[],
   handler: IRouteHandler,
@@ -66,4 +67,12 @@ export type IDomainList = {
 export interface IRouteStore {
   add (id: string, route: IRouteJSON): this
   find (url: string, domain?: string): IRouteJSON | null
+}
+
+export interface IRoute {
+  prefix (prefix: string): this
+  where (param: string, pattern: string | RegExp): this
+  domain (domain: string): this
+  as (name: string)
+  toJSON (): IRouteJSON
 }

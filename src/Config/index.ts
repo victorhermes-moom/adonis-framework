@@ -2,14 +2,14 @@
  * @module main
  */
 
- /*
-* adonis-framework
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ /**
+ * @adonisjs/framework
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 import { IConfig } from '../Contracts/IConfig'
 import * as requireAll from 'require-all'
