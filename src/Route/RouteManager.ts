@@ -146,5 +146,6 @@ export class RouteManager implements IRouteManager {
    */
   public commit () {
     this._registerWithStore(this._routes)
+    this._routes = []
   }
 }
