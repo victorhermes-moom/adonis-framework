@@ -64,15 +64,33 @@ export type IDomainList = {
   [method: string]: IMethodList,
 }
 
+/**
+ * The route store to store final list of routes and
+ * it's tokens
+ */
 export interface IRouteStore {
   add (id: string, route: IRouteJSON): this
   find (url: string, domain?: string): IRouteJSON | null
 }
 
+/**
+ * Route class interface to build routes via fluent
+ * API.
+ */
 export interface IRoute {
   prefix (prefix: string): this
   where (param: string, pattern: string | RegExp): this
   domain (domain: string): this
   as (name: string)
   toJSON (): IRouteJSON
+}
+
+export interface IRouteManager {
+  route (pattern: string, methods: string[], handler: IRouteHandler): IRoute
+  get (pattern: string, handler: IRouteHandler): IRoute
+  post (pattern: string, handler: IRouteHandler): IRoute
+  patch (pattern: string, handler: IRouteHandler): IRoute
+  put (pattern: string, handler: IRouteHandler): IRoute
+  delete (pattern: string, handler: IRouteHandler): IRoute
+  commit (): void
 }

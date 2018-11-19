@@ -2,7 +2,7 @@
  * @module http
  */
 
-/**
+/*
  * @adonisjs/framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
