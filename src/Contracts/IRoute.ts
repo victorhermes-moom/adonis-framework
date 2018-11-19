@@ -85,6 +85,12 @@ export interface IRoute {
   toJSON (): IRouteJSON
 }
 
+export interface IRouteGroup {
+  prefix (prefix: string): this
+  where (param: string, pattern: string | RegExp): this
+  domain (domain: string): this
+}
+
 export interface IRouteManager {
   route (pattern: string, methods: string[], handler: IRouteHandler): IRoute
   get (pattern: string, handler: IRouteHandler): IRoute
@@ -92,5 +98,6 @@ export interface IRouteManager {
   patch (pattern: string, handler: IRouteHandler): IRoute
   put (pattern: string, handler: IRouteHandler): IRoute
   delete (pattern: string, handler: IRouteHandler): IRoute
+  group (callback: () => void): IRouteGroup
   commit (): void
 }

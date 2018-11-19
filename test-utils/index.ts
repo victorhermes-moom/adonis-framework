@@ -15,6 +15,7 @@ import { get, set } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
 import { IRouteJSON } from '../src/Contracts/IRoute'
+import { RouteGroup } from '../src/Route/RouteGroup'
 
 export function appRoot () {
   return join(__dirname, './app')
@@ -83,4 +84,15 @@ export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
 
   finalRoute.name = finalRoute.name || finalRoute.pattern
   return finalRoute
+}
+
+export function flatRoutes (routes) {
+  return routes.reduce((result, route) => {
+    if (route instanceof RouteGroup) {
+      result = result.concat(route.routes.map((route) => route.toJSON()))
+    } else {
+      result.push(route.toJSON())
+    }
+    return result
+  }, [])
 }

@@ -50,7 +50,12 @@ export class Route implements IRoute {
    * Ideally you will define a `prefix` on the [[RouteGroup]]
    */
   public prefix (prefix: string): this {
-    this._pattern = `${this._dropSlashes(prefix)}/${this._pattern}`
+    if (this._pattern === '/') {
+      this._pattern = this._dropSlashes(prefix)
+    } else {
+      this._pattern = `${this._dropSlashes(prefix)}/${this._pattern}`
+    }
+
     return this
   }
 
