@@ -20,7 +20,6 @@ export type IControllerBinding = string
  * Defining route handler as a function
  */
 export type IRouteCallback = (ctx: any) => any | void
-
 export type IRouteHandler = IRouteCallback | IControllerBinding
 
 /**
@@ -51,7 +50,9 @@ export type IRouteJSON = {
 export type IMethodList = {
   tokens: any[],
   routes: {
-    [id: string]: IRouteJSON,
+    [id: string]: {
+      handler: IRouteHandler,
+    },
   },
 }
 
@@ -70,7 +71,7 @@ export type IDomainList = {
  */
 export interface IRouteStore {
   add (id: string, route: IRouteJSON): this
-  find (url: string, domain?: string): IRouteJSON | null
+  find (url: string, domain?: string): { handler: IRouteHandler, params: any } | null
 }
 
 /**
@@ -85,12 +86,19 @@ export interface IRoute {
   toJSON (): IRouteJSON
 }
 
+/**
+ * Route group interface
+ */
 export interface IRouteGroup {
   prefix (prefix: string): this
   where (param: string, pattern: string | RegExp): this
   domain (domain: string): this
 }
 
+/**
+ * Route manager works as the public to all routing
+ * capabilities
+ */
 export interface IRouteManager {
   route (pattern: string, methods: string[], handler: IRouteHandler): IRoute
   get (pattern: string, handler: IRouteHandler): IRoute

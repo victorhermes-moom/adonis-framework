@@ -12,7 +12,7 @@
  */
 
 import { parse, match, exec } from 'matchit'
-import { IRouteJSON, IDomainList, IRouteStore, IMethodList } from '../Contracts/IRoute'
+import { IRouteJSON, IDomainList, IRouteStore, IMethodList, IRouteHandler } from '../Contracts/IRoute'
 import { InvalidRoute } from '../Exceptions'
 
 /**
@@ -75,7 +75,9 @@ export class RouteStore implements IRouteStore {
       })
 
       methodList.tokens.push(tokens)
-      methodList.routes[id] = route
+      methodList.routes[id] = {
+        handler: route.handler,
+      }
     })
 
     return this
@@ -93,7 +95,7 @@ export class RouteStore implements IRouteStore {
    * store.find('posts/1', 'blog.adonisjs.com')
    * ```
    */
-  public find (url: string, method: string, domain?: string): IRouteJSON & { params: any } | null {
+  public find (url: string, method: string, domain?: string): { params: any, handler: IRouteHandler } | null {
     const methodList = this._getMethodsList(domain || 'root', method)
     const matched = match(url, methodList.tokens)
 
@@ -103,6 +105,10 @@ export class RouteStore implements IRouteStore {
 
     const route = methodList.routes[matched[0].id]
     const params = exec(url, matched)
-    return Object.assign({}, route, { params })
+
+    return Object.assign({
+      handler: route.handler,
+      params,
+    })
   }
 }

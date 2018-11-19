@@ -109,20 +109,10 @@ test.group('Route Manager', () => {
           ],
           routes: {
             'apple': {
-              pattern: 'apple',
-              patternMatchers: {},
               handler: getApple,
-              methods: ['GET'],
-              domain: 'root',
-              name: 'apple',
             },
             'foo': {
-              pattern: 'foo',
-              patternMatchers: {},
               handler: getFoo,
-              methods: ['GET'],
-              domain: 'root',
-              name: 'foo',
             },
           },
         },
@@ -137,12 +127,7 @@ test.group('Route Manager', () => {
           }]],
           routes: {
             'foo': {
-              pattern: 'foo',
-              patternMatchers: {},
               handler: postFoo,
-              methods: ['POST'],
-              domain: 'root',
-              name: 'foo',
             },
           },
         },
@@ -159,12 +144,7 @@ test.group('Route Manager', () => {
           }]],
           routes: {
             'foo': {
-              pattern: 'foo',
-              patternMatchers: {},
               handler: getBlogFoo,
-              methods: ['GET'],
-              domain: 'blog.adonisjs.com',
-              name: 'foo',
             },
           },
         },
@@ -287,20 +267,10 @@ test.group('Route Manager', () => {
           ],
           routes: {
             'api/apple': {
-              pattern: 'api/apple',
-              patternMatchers: {},
               handler: getApple,
-              methods: ['GET'],
-              domain: 'root',
-              name: 'api/apple',
             },
             'foo': {
-              pattern: 'foo',
-              patternMatchers: {},
               handler: getFoo,
-              methods: ['GET'],
-              domain: 'root',
-              name: 'foo',
             },
           },
         },
@@ -327,12 +297,7 @@ test.group('Route Manager', () => {
           ],
           routes: {
             'api/foo': {
-              pattern: 'api/foo',
-              patternMatchers: {},
               handler: postFoo,
-              methods: ['POST'],
-              domain: 'root',
-              name: 'api/foo',
             },
           },
         },
@@ -349,12 +314,7 @@ test.group('Route Manager', () => {
           }]],
           routes: {
             'foo': {
-              pattern: 'foo',
-              patternMatchers: {},
               handler: getBlogFoo,
-              methods: ['GET'],
-              domain: 'blog.adonisjs.com',
-              name: 'foo',
             },
           },
         },

@@ -30,7 +30,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -68,7 +70,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -97,7 +101,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -121,7 +127,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -134,7 +142,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -159,7 +169,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
         HEAD: {
@@ -170,7 +182,9 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': route,
+            'foo/:bar': {
+              handler: route.handler,
+            },
           },
         },
       },
@@ -191,7 +205,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:bar', route)
 
     const matchedRoute = store.find('foo/bar', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign({}, route, { params: { bar: 'bar' } }))
+    assert.deepEqual(matchedRoute, { params: { bar: 'bar' }, handler: route.handler })
   })
 
   test('find correct route when matcher fails', (assert) => {
@@ -208,7 +222,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo/1', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign({}, route1, { params: { id: '1' } }))
+    assert.deepEqual(matchedRoute, { params: { id: '1' }, handler: route1.handler })
   })
 
   test('find correct route when param is optional', (assert) => {
@@ -227,7 +241,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign({}, route, { params: {} }))
+    assert.deepEqual(matchedRoute, { params: {}, handler: route1.handler })
   })
 
   test('return null when method mis-match', (assert) => {
@@ -327,7 +341,7 @@ test.group('RouteStore | Match', () => {
     matches.forEach(({ url, matchIndex }) => {
       const match = store.find(url, 'GET')!
       if (matchIndex > -1) {
-        assert.deepEqual(match, Object.assign({}, routes[matchIndex], { params: match.params }))
+        assert.deepEqual(match, { params: match.params, handler: routes[matchIndex].handler })
       } else {
         assert.isNull(match)
       }
