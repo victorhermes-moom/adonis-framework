@@ -10,7 +10,9 @@
 import { join, isAbsolute } from 'path'
 import { outputFile, remove } from 'fs-extra'
 import * as clearRequire from 'clear-require'
-import * as http from 'http'
+import * as httpMocks from 'node-mocks-http'
+
+import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { get, set, omit } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
@@ -52,7 +54,7 @@ export async function createFile (filePath, contents) {
 }
 
 export function httpServer (handler) {
-  return http.createServer(handler)
+  return createServer(handler)
 }
 
 export function fakeConfig (): IConfig {
@@ -104,4 +106,8 @@ export function flatRoutes (routes) {
     }
     return result
   }, [])
+}
+
+export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
+  return { req: httpMocks.createRequest(), res: httpMocks.createResponse() }
 }
