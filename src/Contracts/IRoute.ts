@@ -11,6 +11,8 @@
  * file that was distributed with this source code.
  */
 
+import { IHttpContext } from './IHttpContext'
+
 /**
  * Defining route handler as a Controller.method
  */
@@ -19,7 +21,7 @@ export type IControllerBinding = string
 /**
  * Defining route handler as a function
  */
-export type IRouteCallback = (ctx: any) => any | void
+export type IRouteCallback = (ctx: IHttpContext) => any | void
 export type IRouteHandler = IRouteCallback | IControllerBinding
 
 /**
@@ -44,15 +46,29 @@ export type IRouteJSON = {
 }
 
 /**
+ * Store route is a copy retained by the store to lookup
+ * and return when a route is matched by URL or by
+ * it's name.
+ *
+ * This object has few properties from [[IRouteJSON]], since
+ * we don't need everything here.
+ */
+export type IStoreRoute = {
+  handler: IRouteHandler,
+  method: string,
+  pattern: string,
+  name: string,
+  domain: string,
+}
+
+/**
  * List of tokens and routes for a given method. The
  * method is always listed under the domain
  */
 export type IMethodList = {
   tokens: any[],
   routes: {
-    [id: string]: {
-      handler: IRouteHandler,
-    },
+    [id: string]: IStoreRoute,
   },
 }
 
@@ -71,7 +87,8 @@ export type IDomainList = {
  */
 export interface IRouteStore {
   add (id: string, route: IRouteJSON): this
-  find (url: string, domain?: string): { handler: IRouteHandler, params: any } | null
+  find (url: string, method: string, domain?: string): IStoreRoute & { params: any } | null
+  make (identifier: string, params: any, domain?: string): string | null
 }
 
 /**
@@ -108,4 +125,5 @@ export interface IRouteManager {
   delete (pattern: string, handler: IRouteHandler): IRoute
   group (callback: () => void): IRouteGroup
   commit (): void
+  find (url: string, method: string, domain?: string): { handler: IRouteHandler, params: any } | null
 }

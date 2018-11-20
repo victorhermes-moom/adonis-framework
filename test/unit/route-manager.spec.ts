@@ -110,9 +110,17 @@ test.group('Route Manager', () => {
           routes: {
             'apple': {
               handler: getApple,
+              name: 'apple',
+              pattern: 'apple',
+              method: 'GET',
+              domain: 'root',
             },
             'foo': {
               handler: getFoo,
+              name: 'foo',
+              pattern: 'foo',
+              method: 'GET',
+              domain: 'root',
             },
           },
         },
@@ -128,6 +136,10 @@ test.group('Route Manager', () => {
           routes: {
             'foo': {
               handler: postFoo,
+              name: 'foo',
+              pattern: 'foo',
+              method: 'POST',
+              domain: 'root',
             },
           },
         },
@@ -145,6 +157,10 @@ test.group('Route Manager', () => {
           routes: {
             'foo': {
               handler: getBlogFoo,
+              name: 'foo',
+              pattern: 'foo',
+              method: 'GET',
+              domain: 'blog.adonisjs.com',
             },
           },
         },
@@ -268,9 +284,17 @@ test.group('Route Manager', () => {
           routes: {
             'api/apple': {
               handler: getApple,
+              pattern: 'api/apple',
+              name: 'api/apple',
+              method: 'GET',
+              domain: 'root',
             },
             'foo': {
               handler: getFoo,
+              pattern: 'foo',
+              name: 'foo',
+              method: 'GET',
+              domain: 'root',
             },
           },
         },
@@ -298,6 +322,10 @@ test.group('Route Manager', () => {
           routes: {
             'api/foo': {
               handler: postFoo,
+              pattern: 'api/foo',
+              name: 'api/foo',
+              method: 'POST',
+              domain: 'root',
             },
           },
         },
@@ -315,10 +343,24 @@ test.group('Route Manager', () => {
           routes: {
             'foo': {
               handler: getBlogFoo,
+              pattern: 'foo',
+              name: 'foo',
+              method: 'GET',
+              domain: 'blog.adonisjs.com',
             },
           },
         },
       },
     })
+  })
+
+  test('make url to a route', (assert) => {
+    const manager = new RouteManager()
+
+    manager.get('/foo', function getFoo () {}).as('listFoo')
+    manager.post('/foo/:id', function postFoo () {}).as('storeFoo')
+    manager.commit()
+
+    assert.equal(manager.make('storeFoo', { id: 1 }), 'foo/1')
   })
 })

@@ -33,3 +33,13 @@ export class InvalidRoute extends RuntimeException {
     return new this(message, 500, 'E_DUPLICATE_ROUTE')
   }
 }
+
+export class IncompleteParams extends RuntimeException {
+  public static missingParam (name, pattern) {
+    return new this(`${name} param is required to make url for ${pattern} route`, 500, 'E_MISSING_URL_PARAM')
+  }
+
+  public static jumpParam (name, pattern) {
+    return new this(`${name} param is required to make url for ${pattern} route`, 500, 'E_CANNOT_JUMP_PARAM')
+  }
+}

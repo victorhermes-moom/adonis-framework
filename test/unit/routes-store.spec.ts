@@ -11,7 +11,7 @@ import * as test from 'japa'
 
 import { IRouteJSON } from '../../src/Contracts/IRoute'
 import { RouteStore } from '../../src/Route/RouteStore'
-import { makeRoute } from '../../test-utils'
+import { makeRoute, routeToStoreRoute } from '../../test-utils'
 
 test.group('RouteStore | Add', () => {
   test('add new route', (assert) => {
@@ -30,9 +30,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'GET'),
           },
         },
       },
@@ -70,9 +68,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'GET'),
           },
         },
       },
@@ -101,9 +97,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'GET'),
           },
         },
       },
@@ -115,7 +109,7 @@ test.group('RouteStore | Add', () => {
 
     const route = makeRoute({})
     store.add('foo/:bar', route)
-    store.add('foo/:bar', Object.assign(route, { domain: 'blog.adonisjs.com' }))
+    store.add('foo/:bar', Object.assign({}, route, { domain: 'blog.adonisjs.com' }))
 
     assert.deepEqual(store['_routes'], {
       'root': {
@@ -127,9 +121,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'GET'),
           },
         },
       },
@@ -142,9 +134,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': Object.assign(routeToStoreRoute(route, 'GET'), { domain: 'blog.adonisjs.com' }),
           },
         },
       },
@@ -169,9 +159,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'GET'),
           },
         },
         HEAD: {
@@ -182,9 +170,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': {
-              handler: route.handler,
-            },
+            'foo/:bar': routeToStoreRoute(route, 'HEAD'),
           },
         },
       },
@@ -205,7 +191,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:bar', route)
 
     const matchedRoute = store.find('foo/bar', 'GET')
-    assert.deepEqual(matchedRoute, { params: { bar: 'bar' }, handler: route.handler })
+    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route, 'GET'), { params: { bar: 'bar' } }))
   })
 
   test('find correct route when matcher fails', (assert) => {
@@ -222,7 +208,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo/1', 'GET')
-    assert.deepEqual(matchedRoute, { params: { id: '1' }, handler: route1.handler })
+    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route1, 'GET'), { params: { id: '1' } }))
   })
 
   test('find correct route when param is optional', (assert) => {
@@ -241,7 +227,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo', 'GET')
-    assert.deepEqual(matchedRoute, { params: {}, handler: route1.handler })
+    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route1, 'GET'), { params: {} }))
   })
 
   test('return null when method mis-match', (assert) => {
@@ -341,10 +327,88 @@ test.group('RouteStore | Match', () => {
     matches.forEach(({ url, matchIndex }) => {
       const match = store.find(url, 'GET')!
       if (matchIndex > -1) {
-        assert.deepEqual(match, { params: match.params, handler: routes[matchIndex].handler })
+        assert.deepEqual(match, Object.assign(routeToStoreRoute(routes[matchIndex], 'GET'), { params: match.params }))
       } else {
         assert.isNull(match)
       }
     })
+  })
+})
+
+test.group('RouteStore | Make', () => {
+  test('make path to static url', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'about' })
+    store.add('about', route)
+
+    assert.equal(store.make('about', {}), 'about')
+  })
+
+  test('make path for a specific domain', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'about' })
+    const route1 = makeRoute({ pattern: 'about', domain: 'blog.adonisjs.com' })
+    store.add('about', route)
+    store.add('about', route1)
+
+    assert.equal(store.make('about', {}, 'blog.adonisjs.com'), '//blog.adonisjs.com/about')
+  })
+
+  test('make path to a route with params', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id' })
+    store.add('getUser', route)
+
+    assert.equal(store.make('user/:id', { id: 1 }), 'user/1')
+  })
+
+  test('make path to a route with multiple params', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id/:name' })
+    store.add('getUser', route)
+
+    assert.equal(store.make('user/:id/:name', { id: 1, name: 'virk' }), 'user/1/virk')
+  })
+
+  test('raise error when param is not defined', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id/:name' })
+    store.add('getUser', route)
+
+    const fn = () => store.make('user/:id/:name', { id: 1 })
+    assert.throw(fn, 'E_MISSING_URL_PARAM: name param is required to make url for user/:id/:name route')
+  })
+
+  test('work fine when missing param value is optional', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id/:name?' })
+    store.add('getUser', route)
+
+    assert.equal(store.make('user/:id/:name?', { id: 1 }), 'user/1')
+  })
+
+  test('throw error when missing incremental optional param', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id?/:name?' })
+    store.add('getUser', route)
+
+    const fn = () => store.make('user/:id?/:name?', { name: 'virk' })
+    assert.throw(fn, 'E_CANNOT_JUMP_PARAM: id param is required to make url for user/:id?/:name? route')
+  })
+
+  test('return null when route not found', (assert) => {
+    const store = new RouteStore()
+
+    const route = makeRoute({ pattern: 'user/:id' })
+    store.add('getUser', route)
+
+    assert.isNull(store.make('user', {}))
   })
 })

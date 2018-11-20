@@ -11,11 +11,12 @@ import { join, isAbsolute } from 'path'
 import { outputFile, remove } from 'fs-extra'
 import * as clearRequire from 'clear-require'
 import * as http from 'http'
-import { get, set } from 'lodash'
+import { get, set, omit } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
-import { IRouteJSON } from '../src/Contracts/IRoute'
+import { IRouteJSON, IStoreRoute } from '../src/Contracts/IRoute'
 import { RouteGroup } from '../src/Route/RouteGroup'
+import { RouteManager } from '../src/Route/RouteManager'
 
 export function appRoot () {
   return join(__dirname, './app')
@@ -84,6 +85,14 @@ export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
 
   finalRoute.name = finalRoute.name || finalRoute.pattern
   return finalRoute
+}
+
+export function makeRouter (): RouteManager {
+  return new RouteManager()
+}
+
+export function routeToStoreRoute (route, method): IStoreRoute {
+  return Object.assign({ method }, omit(route, ['patternMatchers', 'methods']))
 }
 
 export function flatRoutes (routes) {

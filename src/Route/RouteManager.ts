@@ -148,4 +148,18 @@ export class RouteManager implements IRouteManager {
     this._registerWithStore(this._routes)
     this._routes = []
   }
+
+  /**
+  * @see [[RouteStore.find]]
+   */
+  public find (url: string, method: string, domain?: string) {
+    return this._store.find(url, method, domain)
+  }
+
+  /**
+   * @see [[RouteStore.make]]
+   */
+  public make (identifier: string, params: any, domain?: string): string | null {
+    return this._store.make(identifier, params, domain)
+  }
 }
