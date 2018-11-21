@@ -63,6 +63,20 @@ export class RouteStore implements IRouteStore {
   }
 
   /**
+   * Find route with the URL, method and optional domain
+   */
+  private _find (url: string, method: string, domain?: string) {
+    const methodList = this._getMethodsList(domain || 'root', method)
+    const matched = match(url, methodList.tokens)
+
+    if (!matched.length) {
+      return null
+    }
+
+    return { methodList, matched }
+  }
+
+  /**
    * Add a new route to the routes store. The id is used to map route
    * pattern tokens with the route defination and duplicate ids
    * for a single domain are not allowed.
@@ -128,17 +142,16 @@ export class RouteStore implements IRouteStore {
    * ```
    */
   public find (url: string, method: string, domain?: string): ILookedupRoute {
-    const methodList = this._getMethodsList(domain || 'root', method)
-    const matched = match(url, methodList.tokens)
+    const match = this._find(url, method, domain) || this._find(url, '*', domain)
 
-    if (!matched.length) {
+    if (!match) {
       return null
     }
 
-    const route = methodList.routes[matched[0].id]
-    const params = exec(url, matched)
+    const route = match.methodList.routes[match.matched[0].id]
+    const params = exec(url, match.matched)
 
-    return Object.assign({}, route, { params })
+    return Object.assign({}, route, { params, method })
   }
 
   /**

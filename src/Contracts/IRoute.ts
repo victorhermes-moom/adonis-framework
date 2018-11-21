@@ -129,6 +129,7 @@ export interface IRouteManager {
   patch (pattern: string, handler: IRouteHandler): IRoute
   put (pattern: string, handler: IRouteHandler): IRoute
   delete (pattern: string, handler: IRouteHandler): IRoute
+  any (pattern: string, handler: IRouteHandler): IRoute
   group (callback: () => void): IRouteGroup
   commit (): void
   find (url: string, method: string, domain?: string): ILookedupRoute

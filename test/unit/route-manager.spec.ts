@@ -346,4 +346,14 @@ test.group('Route Manager', () => {
       },
     }))
   })
+
+  test('define route that responds to all HTTP methods', (assert) => {
+    const manager = new RouteManager()
+
+    const route = manager.any('foo', function getAll () {})
+    manager.commit()
+
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
+    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, { params: {} }))
+  })
 })

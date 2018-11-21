@@ -134,6 +134,20 @@ export class RouteManager implements IRouteManager {
   }
 
   /**
+   * Define route that responds to HTTP methods.
+   * The pattern cannot have regex, make use of [[Route.where]] method
+   * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.any('*', 'HomeController.renderVueApp')
+   * ```
+   */
+  public any (pattern: string, handler: IRouteHandler): Route {
+    return this.route(pattern, ['*'], handler)
+  }
+
+  /**
    * Create an instance of [[RouteGroup]]. All routes created inside the
    * callback function will become part of the route group.
    *
