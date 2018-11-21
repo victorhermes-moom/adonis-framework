@@ -306,4 +306,44 @@ test.group('Route Manager', () => {
 
     assert.equal(manager.make('storeFoo', { id: 1 }), 'foo/1')
   })
+
+  test('always match wildcard route when defined as first route', (assert) => {
+    const manager = new RouteManager()
+
+    const route = manager.get('*', function getAll () {})
+    manager.get('foo', function getFoo () {})
+    manager.commit()
+
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
+    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, {
+      params: { '*': ['foo'] },
+    }))
+  })
+
+  test('find explicit route when defined first', (assert) => {
+    const manager = new RouteManager()
+
+    const route = manager.get('foo', function getFoo () {})
+    manager.get('*', function getAll () {})
+    manager.commit()
+
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
+    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, { params: {} }))
+  })
+
+  test('define wildcard was parameter', (assert) => {
+    const manager = new RouteManager()
+
+    const route = manager.get('foo/*', function getAll () {})
+    manager.get('foo/bar', function getFoo () {})
+    manager.commit()
+
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
+
+    assert.deepEqual(manager.find('foo/bar/baz', 'GET'), Object.assign(expectedRoute, {
+      params: {
+        '*': ['bar', 'baz'],
+      },
+    }))
+  })
 })
