@@ -144,7 +144,7 @@ export class RouteManager implements IRouteManager {
    * ```
    */
   public any (pattern: string, handler: IRouteHandler): Route {
-    return this.route(pattern, ['*'], handler)
+    return this.route(pattern, ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'], handler)
   }
 
   /**

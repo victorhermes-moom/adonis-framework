@@ -13,10 +13,10 @@ import * as clearRequire from 'clear-require'
 import * as httpMocks from 'node-mocks-http'
 
 import { createServer, IncomingMessage, ServerResponse } from 'http'
-import { get, set, omit } from 'lodash'
+import { get, set, pick } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
-import { IRouteJSON, IStoreRoute } from '../src/Contracts/IRoute'
+import { IRouteJSON, ILookedupRoute } from '../src/Contracts/IRoute'
 import { RouteGroup } from '../src/Route/RouteGroup'
 import { RouteManager } from '../src/Route/RouteManager'
 
@@ -121,8 +121,8 @@ export function makeRouter (): RouteManager {
 /**
  * Converts route JSON to route store JSON
  */
-export function routeToStoreRoute (route, method): IStoreRoute {
-  return Object.assign({ method }, omit(route, ['patternMatchers', 'methods']))
+export function routeToStoreRoute (route, method, params = {}): ILookedupRoute {
+  return Object.assign(pick(route, ['name', 'pattern', 'handler']), { method, params })
 }
 
 /**

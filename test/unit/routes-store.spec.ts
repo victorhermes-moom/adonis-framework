@@ -30,7 +30,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'GET'),
+            'foo/:bar': route,
           },
         },
       },
@@ -68,7 +68,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'GET'),
+            'foo/:bar': route,
           },
         },
       },
@@ -97,7 +97,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'GET'),
+            'foo/:bar': route,
           },
         },
       },
@@ -121,7 +121,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'GET'),
+            'foo/:bar': route,
           },
         },
       },
@@ -134,7 +134,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': Object.assign(routeToStoreRoute(route, 'GET'), { domain: 'blog.adonisjs.com' }),
+            'foo/:bar': Object.assign(route, { domain: 'blog.adonisjs.com' }),
           },
         },
       },
@@ -159,7 +159,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'GET'),
+            'foo/:bar': route,
           },
         },
         HEAD: {
@@ -170,7 +170,7 @@ test.group('RouteStore | Add', () => {
             ],
           ],
           routes: {
-            'foo/:bar': routeToStoreRoute(route, 'HEAD'),
+            'foo/:bar': route,
           },
         },
       },
@@ -191,7 +191,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:bar', route)
 
     const matchedRoute = store.find('foo/bar', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route, 'GET'), { params: { bar: 'bar' } }))
+    assert.deepEqual(matchedRoute, routeToStoreRoute(route, 'GET', { bar: 'bar' }))
   })
 
   test('find correct route when matcher fails', (assert) => {
@@ -208,7 +208,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo/1', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route1, 'GET'), { params: { id: '1' } }))
+    assert.deepEqual(matchedRoute, routeToStoreRoute(route1, 'GET', { id: '1' }))
   })
 
   test('find correct route when param is optional', (assert) => {
@@ -227,7 +227,7 @@ test.group('RouteStore | Match', () => {
     store.add('foo/:id', route1)
 
     const matchedRoute = store.find('foo', 'GET')
-    assert.deepEqual(matchedRoute, Object.assign(routeToStoreRoute(route1, 'GET'), { params: {} }))
+    assert.deepEqual(matchedRoute, routeToStoreRoute(route1, 'GET'))
   })
 
   test('return null when method mis-match', (assert) => {
@@ -327,7 +327,7 @@ test.group('RouteStore | Match', () => {
     matches.forEach(({ url, matchIndex }) => {
       const match = store.find(url, 'GET')!
       if (matchIndex > -1) {
-        assert.deepEqual(match, Object.assign(routeToStoreRoute(routes[matchIndex], 'GET'), { params: match.params }))
+        assert.deepEqual(match, routeToStoreRoute(routes[matchIndex], 'GET', match.params))
       } else {
         assert.isNull(match)
       }

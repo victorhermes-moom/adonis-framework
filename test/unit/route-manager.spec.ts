@@ -77,14 +77,16 @@ test.group('Route Manager', () => {
               handler: getApple,
               name: 'apple',
               pattern: 'apple',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'root',
             },
             'foo': {
               handler: getFoo,
               name: 'foo',
               pattern: 'foo',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'root',
             },
           },
@@ -103,7 +105,8 @@ test.group('Route Manager', () => {
               handler: postFoo,
               name: 'foo',
               pattern: 'foo',
-              method: 'POST',
+              methods: ['POST'],
+              patternMatchers: {},
               domain: 'root',
             },
           },
@@ -124,7 +127,8 @@ test.group('Route Manager', () => {
               handler: getBlogFoo,
               name: 'foo',
               pattern: 'foo',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'blog.adonisjs.com',
             },
           },
@@ -216,14 +220,16 @@ test.group('Route Manager', () => {
               handler: getApple,
               pattern: 'api/apple',
               name: 'api/apple',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'root',
             },
             'foo': {
               handler: getFoo,
               pattern: 'foo',
               name: 'foo',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'root',
             },
           },
@@ -254,7 +260,8 @@ test.group('Route Manager', () => {
               handler: postFoo,
               pattern: 'api/foo',
               name: 'api/foo',
-              method: 'POST',
+              methods: ['POST'],
+              patternMatchers: {},
               domain: 'root',
             },
           },
@@ -275,7 +282,8 @@ test.group('Route Manager', () => {
               handler: getBlogFoo,
               pattern: 'foo',
               name: 'foo',
-              method: 'GET',
+              methods: ['GET'],
+              patternMatchers: {},
               domain: 'blog.adonisjs.com',
             },
           },
@@ -291,10 +299,8 @@ test.group('Route Manager', () => {
     const route = manager.post('/foo/:id', function postFoo () {}).as('storeFoo')
     manager.commit()
 
-    const expectedRoute = routeToStoreRoute(route.toJSON(), 'POST')
-    assert.deepEqual(manager.find('foo/1', 'POST'), Object.assign(expectedRoute, {
-      params: { id: '1' },
-    }))
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'POST', { id: '1' })
+    assert.deepEqual(manager.find('foo/1', 'POST'), expectedRoute)
   })
 
   test('make url to a route', (assert) => {
@@ -314,10 +320,8 @@ test.group('Route Manager', () => {
     manager.get('foo', function getFoo () {})
     manager.commit()
 
-    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
-    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, {
-      params: { '*': ['foo'] },
-    }))
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET', { '*': ['foo'] })
+    assert.deepEqual(manager.find('foo', 'GET'), expectedRoute)
   })
 
   test('find explicit route when defined first', (assert) => {
@@ -328,7 +332,7 @@ test.group('Route Manager', () => {
     manager.commit()
 
     const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
-    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, { params: {} }))
+    assert.deepEqual(manager.find('foo', 'GET'), expectedRoute)
   })
 
   test('define wildcard was parameter', (assert) => {
@@ -338,13 +342,11 @@ test.group('Route Manager', () => {
     manager.get('foo/bar', function getFoo () {})
     manager.commit()
 
-    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET', {
+      '*': ['bar', 'baz'],
+    })
 
-    assert.deepEqual(manager.find('foo/bar/baz', 'GET'), Object.assign(expectedRoute, {
-      params: {
-        '*': ['bar', 'baz'],
-      },
-    }))
+    assert.deepEqual(manager.find('foo/bar/baz', 'GET'), expectedRoute)
   })
 
   test('define route that responds to all HTTP methods', (assert) => {
@@ -354,6 +356,6 @@ test.group('Route Manager', () => {
     manager.commit()
 
     const expectedRoute = routeToStoreRoute(route.toJSON(), 'GET')
-    assert.deepEqual(manager.find('foo', 'GET'), Object.assign(expectedRoute, { params: {} }))
+    assert.deepEqual(manager.find('foo', 'GET'), expectedRoute)
   })
 })

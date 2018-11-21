@@ -18,7 +18,6 @@ import {
   IDomainList,
   IRouteStore,
   IMethodList,
-  IStoreRoute,
   ILookedupRoute,
 } from '../Contracts/IRoute'
 
@@ -34,7 +33,7 @@ import { InvalidRouteException, IncompleteParamsException } from '../Exceptions'
  */
 export class RouteStore implements IRouteStore {
   private _routes: { [domain: string]: IDomainList } = {}
-  private _flatRoutesList: IStoreRoute[] = []
+  private _flatRoutesList: IRouteJSON[] = []
 
   /**
    * Returns the routes and tokens for a given domain.
@@ -63,20 +62,6 @@ export class RouteStore implements IRouteStore {
   }
 
   /**
-   * Find route with the URL, method and optional domain
-   */
-  private _find (url: string, method: string, domain?: string) {
-    const methodList = this._getMethodsList(domain || 'root', method)
-    const matched = match(url, methodList.tokens)
-
-    if (!matched.length) {
-      return null
-    }
-
-    return { methodList, matched }
-  }
-
-  /**
    * Add a new route to the routes store. The id is used to map route
    * pattern tokens with the route defination and duplicate ids
    * for a single domain are not allowed.
@@ -101,29 +86,17 @@ export class RouteStore implements IRouteStore {
         token.id = id
         return token
       })
+
       methodList.tokens.push(tokens)
-
-      /**
-       * A trimmed copy of the route, we need this to make the URL to a
-       * route and also return when the route is lookedup by the
-       * URL
-       */
-      const storeRoute = {
-        handler: route.handler,
-        name: route.name,
-        domain: route.domain,
-        pattern: route.pattern,
-        method: method,
-      }
-
-      methodList.routes[id] = storeRoute
+      methodList.routes[id] = route
 
       /**
        * Push to flat list for making URLS to pre-registered
-       * routes. Since URL's are created incrementally, we
-       * cannot the nested to find the nearest route.
+       * routes. Since URL's are created incrementally, scanning
+       * them inside nested tree is more expensive vs using
+       * the flat list.
        */
-      this._flatRoutesList.push(storeRoute)
+      this._flatRoutesList.push(route)
     })
 
     return this
@@ -141,17 +114,24 @@ export class RouteStore implements IRouteStore {
    * store.find('posts/1', 'blog.adonisjs.com')
    * ```
    */
-  public find (url: string, method: string, domain?: string): ILookedupRoute {
-    const match = this._find(url, method, domain) || this._find(url, '*', domain)
+  public find (url: string, method: string, domain?: string): ILookedupRoute | null {
+    const methodList = this._getMethodsList(domain || 'root', method)
+    const matched = match(url, methodList.tokens)
 
-    if (!match) {
+    if (!matched.length) {
       return null
     }
 
-    const route = match.methodList.routes[match.matched[0].id]
-    const params = exec(url, match.matched)
+    const route = methodList.routes[matched[0].id]
+    const params = exec(url, matched)
 
-    return Object.assign({}, route, { params, method })
+    return {
+      handler: route.handler,
+      pattern: route.pattern,
+      name: route.name,
+      params,
+      method,
+    }
   }
 
   /**
