@@ -64,13 +64,27 @@ export class Request extends Macroable implements IRequest {
     private _config: IConfig,
   ) {
     super()
+    this._parseQueryString()
+  }
 
+  /**
+   * Parses the query string
+   */
+  private _parseQueryString () {
+    if (this.parsedUrl.query) {
+      this.updateQs(qs.parse(this.parsedUrl.query))
+      this._original = { ...this._all }
+    }
+  }
+
+  /**
+   * Compile the proxy address trust function, only when it's
+   * not already compiled
+   */
+  private _compileTrust () {
     if (!trustFn) {
       trustFn = proxyaddr.compile(this._config.get(TRUST_PROXY, 'loopback'))
     }
-
-    this.updateQs(qs.parse(this.parsedUrl.query))
-    this._original = { ...this._all }
   }
 
   /**
@@ -307,6 +321,7 @@ export class Request extends Macroable implements IRequest {
       return ipFn(this)
     }
 
+    this._compileTrust()
     return proxyaddr(this.request, trustFn)
   }
 
@@ -329,6 +344,7 @@ export class Request extends Macroable implements IRequest {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public ips (): string[] {
+    this._compileTrust()
     return proxyaddr.all(this.request, trustFn)
   }
 
@@ -353,6 +369,7 @@ export class Request extends Macroable implements IRequest {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public protocol (): string {
+    this._compileTrust()
     const protocol = this.parsedUrl.protocol!
 
     /* istanbul ignore if */
@@ -391,6 +408,7 @@ export class Request extends Macroable implements IRequest {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public hostname (): string | null {
+    this._compileTrust()
     let host = this.header('host')
 
     /**
