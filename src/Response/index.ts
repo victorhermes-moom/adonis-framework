@@ -23,7 +23,13 @@ import * as vary from 'vary'
 
 import { IRequest } from '../Contracts/IRequest'
 import { IConfig } from '../Contracts/IConfig'
-import { IResponse, ICastableHeader, IResponseContentType, IReadableStream } from '../Contracts/IResponse'
+
+import {
+  IResponse,
+  ICastableHeader,
+  IResponseContentType,
+  IReadableStream,
+} from '../Contracts/IResponse'
 
 const ETAG = 'app.http.etag'
 const JSONP_CALLBACK = 'app.http.jsonpCallback'
@@ -34,7 +40,7 @@ const JSONP_CALLBACK = 'app.http.jsonpCallback'
  *
  * The response class has support for `implicitEnd` mode, which is set to true by default.
  *
- * When implicit end is set to true, the response class will not write content to the HTTP server
+ * When implicit end is set to true, the response class will not write content to the HTTP response
  * directly and instead waits for an explicit call to the `finish` method. This is done to
  * allow `return` statements from controllers.
  *
@@ -47,7 +53,7 @@ const JSONP_CALLBACK = 'app.http.jsonpCallback'
  *    and set it as body before calling `finish`.
  *
  * **When set to false**
- * 1. Calls to `send`, `json` and `jsonp` will write the response write away.
+ * 1. Calls to `send`, `json` and `jsonp` will write the response writeaway.
  * 2. The `return value` of the controller will be discarded.
  * 3. The call to `finish` method is a noop.
  */
@@ -227,6 +233,7 @@ export class Response implements IResponse {
    * ```
    */
   public append (key: string, value: ICastableHeader): this {
+    /* istanbul ignore if */
     if (!value) {
       return this
     }
@@ -317,12 +324,12 @@ export class Response implements IResponse {
    * Builds the response body and returns it's appropriate type
    * to be set as the content-type header.
    *
-   * Ideally, one you should use [[send]] vs using this method. This method will
+   * Ideally, you should use [[send]] vs using this method. This method will
    * not set any headers and must be used when you want more control over the
    * response sending process.
    *
    * Make sure to appropriately handle the case of `unknown` type, which is returned
-   * when body is non-existy or unable to parse the body type.
+   * when unable to parse the body type.
    */
   public buildResponseBody (body: any): { body: any, type: IResponseContentType, originalType?: string } {
     if (!body) {
@@ -462,6 +469,7 @@ export class Response implements IResponse {
        * stream
        */
       body.on('error', (error) => {
+        /* istanbul ignore if */
         if (finished) {
           return
         }

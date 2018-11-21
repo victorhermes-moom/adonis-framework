@@ -2,7 +2,7 @@
  * @module http
  */
 
-/**
+/*
  * @adonisjs/framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -46,6 +46,12 @@ export type IRouteJSON = {
 }
 
 /**
+ * Route looked up during the HTTP request using request
+ * URL, method and the host.
+ */
+export type ILookedupRoute = IStoreRoute & { params: any } | null
+
+/**
  * Store route is a copy retained by the store to lookup
  * and return when a route is matched by URL or by
  * it's name.
@@ -87,7 +93,7 @@ export type IDomainList = {
  */
 export interface IRouteStore {
   add (id: string, route: IRouteJSON): this
-  find (url: string, method: string, domain?: string): IStoreRoute & { params: any } | null
+  find (url: string, method: string, domain?: string): ILookedupRoute
   make (identifier: string, params: any, domain?: string): string | null
 }
 
@@ -125,5 +131,6 @@ export interface IRouteManager {
   delete (pattern: string, handler: IRouteHandler): IRoute
   group (callback: () => void): IRouteGroup
   commit (): void
-  find (url: string, method: string, domain?: string): { handler: IRouteHandler, params: any } | null
+  find (url: string, method: string, domain?: string): ILookedupRoute
+  make (identifier: string, params: any, domain?: string): string | null
 }

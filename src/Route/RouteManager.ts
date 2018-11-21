@@ -19,8 +19,8 @@ import { RouteGroup } from './RouteGroup'
 type MixedRoutes = (Route | RouteGroup)[]
 
 /**
- * Route manager offers a public interface to create individual routes,
- * group them or define them as restful resources.
+ * RouteManager class is exposed via Ioc container binding `Route`, which
+ * is used to define HTTP routes.
  */
 export class RouteManager implements IRouteManager {
   private _routes: MixedRoutes = []
@@ -44,7 +44,12 @@ export class RouteManager implements IRouteManager {
   }
 
   /**
-   * Define a route to handle any number of verbs
+   * Define a route with any number of HTTP methods.
+   *
+   * @example
+   * ```js
+   * Route.route('about', ['GET', 'POST'], 'UserController.show')
+   * ```
    */
   public route (pattern: string, methods: string[], handler: IRouteHandler): Route {
     const route = new Route(pattern, methods, handler)
@@ -60,8 +65,13 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Define a route to handle a URL pattern for GET requests.
-   * The pattern cannot have regex, make use of `where` method
+   * The pattern cannot have regex, make use of [[Route.where]] method
    * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.get('/', 'HomeController.show')
+   * ```
    */
   public get (pattern: string, handler: IRouteHandler): Route {
     return this.route(pattern, ['GET'], handler)
@@ -69,8 +79,13 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Define a route to handle a URL pattern for POST requests.
-   * The pattern cannot have regex, make use of `where` method
+   * The pattern cannot have regex, make use of [[Route.where]] method
    * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.post('users', 'UserController.store')
+   * ```
    */
   public post (pattern: string, handler: IRouteHandler): Route {
     return this.route(pattern, ['POST'], handler)
@@ -78,8 +93,13 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Define a route to handle a URL pattern for PATCH requests.
-   * The pattern cannot have regex, make use of `where` method
+   * The pattern cannot have regex, make use of [[Route.where]] method
    * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.patch('users', 'UserController.update')
+   * ```
    */
   public patch (pattern: string, handler: IRouteHandler): Route {
     return this.route(pattern, ['PATCH'], handler)
@@ -87,8 +107,13 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Define a route to handle a URL pattern for PUT requests.
-   * The pattern cannot have regex, make use of `where` method
+   * The pattern cannot have regex, make use of [[Route.where]] method
    * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.put('users', 'UserController.update')
+   * ```
    */
   public put (pattern: string, handler: IRouteHandler): Route {
     return this.route(pattern, ['PUT'], handler)
@@ -96,16 +121,28 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Define a route to handle a URL pattern for DELETE requests.
-   * The pattern cannot have regex, make use of `where` method
+   * The pattern cannot have regex, make use of [[Route.where]] method
    * to define regex patterns.
+   *
+   * @example
+   * ```js
+   * Route.put('users', 'UserController.delete')
+   * ```
    */
   public delete (pattern: string, handler: IRouteHandler): Route {
     return this.route(pattern, ['DELETE'], handler)
   }
 
   /**
-   * Returns a group to group multiple routes together and update
-   * their properties in bulk
+   * Create an instance of [[RouteGroup]]. All routes created inside the
+   * callback function will become part of the route group.
+   *
+   * @example
+   * ```js
+   * Route.group(() => {
+   *  Route.get('users', 'UserController.show')
+   * }).prefix('api/v1')
+   * ```
    */
   public group (callback: () => void): RouteGroup {
     const group = new RouteGroup()
@@ -141,8 +178,9 @@ export class RouteManager implements IRouteManager {
 
   /**
    * Commits the routes to the route store. This is the time when
-   * we generate tokens from the route, which are used to find
-   * the correct route for a given URL, METHOD and DOMAIN.
+   * we generate tokens from the routes. Later tokens are used
+   * to find the correct route for a given URL, METHOD and
+   * DOMAIN.
    */
   public commit () {
     this._registerWithStore(this._routes)

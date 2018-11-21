@@ -16,6 +16,22 @@ import { IRequest } from './IRequest'
 import { IResponse } from './IResponse'
 import { IConfig } from './IConfig'
 
+/**
+ * Hook signature
+ */
+export type IContextHook = (ctx: IHttpContext) => void
+
+/**
+ * Hooks signature
+ */
+export type IContextHooks = {
+  ready: IContextHook[],
+  tear: IContextHook[],
+}
+
+/**
+ * The static interface for the HttpContext
+ */
 export interface IHttpContextConstructor {
   new (request: IRequest, response: IResponse)
   onReady (hook: IContextHook): void
@@ -23,14 +39,10 @@ export interface IHttpContextConstructor {
   newup (req: IncomingMessage, res: ServerResponse, config: IConfig): Promise<IHttpContext>
 }
 
+/**
+ * HttpContext interface
+ */
 export interface IHttpContext {
   request: IRequest,
   response: IResponse,
-}
-
-export type IContextHook = (ctx: IHttpContext) => void
-
-export type IContextHooks = {
-  ready: IContextHook[],
-  tear: IContextHook[],
 }

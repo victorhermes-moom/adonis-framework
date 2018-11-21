@@ -28,7 +28,7 @@ test.group('Config', (group) => {
       }
     }`)
 
-    const config = new Config(join(appRoot(), 'config'), ['js'])
+    const config = new Config(join(appRoot(), 'config'))
     assert.deepEqual(config['_configCache'], {
       app: {
         logger: {

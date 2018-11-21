@@ -2,7 +2,7 @@
  * @module http
  */
 
-/**
+/*
  * @adonisjs/framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -58,7 +58,11 @@ export class Request extends Macroable implements IRequest {
   protected static _macros = {}
   protected static _getters = {}
 
-  constructor (public request: IncomingMessage, public response: ServerResponse, private _config: IConfig) {
+  constructor (
+    public request: IncomingMessage,
+    public response: ServerResponse,
+    private _config: IConfig,
+  ) {
     super()
 
     if (!trustFn) {
@@ -270,7 +274,7 @@ export class Request extends Macroable implements IRequest {
    * Returns the ip address of the user. This method is optimize to fetch
    * ip address even when running your AdonisJs app behind a proxy.
    *
-   * You can also define your own custom function to compute this ip address by
+   * You can also define your own custom function to compute the ip address by
    * defining `app.http.getIp` as a function inside the config file.
    *
    * ```js
@@ -350,6 +354,8 @@ export class Request extends Macroable implements IRequest {
    */
   public protocol (): string {
     const protocol = this.parsedUrl.protocol!
+
+    /* istanbul ignore if */
     if (!(trustFn as any)(this.request.connection.remoteAddress, 0)) {
       return protocol
     }
@@ -472,7 +478,7 @@ export class Request extends Macroable implements IRequest {
 
   /**
    * Returns the complete HTTP url by combining
-   * [[protocol]]://[[hostname]][[url]]
+   * [[protocol]]://[[hostname]]/[[url]]
    *
    * @example
    * ```js
@@ -502,6 +508,19 @@ export class Request extends Macroable implements IRequest {
    * | ['json'] | json |
    * | ['application/*'] | application/json |
    * | ['vnd+json'] | application/json |
+   *
+   * @example
+   * ```js
+   * const bodyType = request.is(['json', 'xml'])
+   *
+   * if (bodyType === 'json') {
+   *  // process JSON
+   * }
+   *
+   * if (bodyType === 'xml') {
+   *  // process XML
+   * }
+   * ```
    */
   public is (types: string[]): string | null {
     return typeIs(this.request, types) || null

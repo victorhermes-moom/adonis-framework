@@ -9,7 +9,7 @@
 
 import * as test from 'japa'
 import { RouteManager } from '../../src/Route/RouteManager'
-import { flatRoutes } from '../../test-utils'
+import { flatRoutes, makeRoute, routeToStoreRoute } from '../../test-utils'
 
 test.group('Route Manager', () => {
   test('define routes for all verbs in sequence', (assert) => {
@@ -28,46 +28,11 @@ test.group('Route Manager', () => {
     manager.delete('/foo', deleteFoo)
 
     assert.deepEqual(flatRoutes(manager['_routes']), [
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: getFoo,
-        methods: ['GET'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: postFoo,
-        methods: ['POST'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: putFoo,
-        methods: ['PUT'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: patchFoo,
-        methods: ['PATCH'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: deleteFoo,
-        methods: ['DELETE'],
-        domain: 'root',
-        name: 'foo',
-      },
+      makeRoute({ pattern: 'foo', handler: getFoo }),
+      makeRoute({ pattern: 'foo', handler: postFoo, methods: ['POST'] }),
+      makeRoute({ pattern: 'foo', handler: putFoo, methods: ['PUT'] }),
+      makeRoute({ pattern: 'foo', handler: patchFoo, methods: ['PATCH'] }),
+      makeRoute({ pattern: 'foo', handler: deleteFoo, methods: ['DELETE'] }),
     ])
   })
 
@@ -188,46 +153,11 @@ test.group('Route Manager', () => {
     manager.delete('/foo', deleteFoo)
 
     assert.deepEqual(flatRoutes(manager['_routes']), [
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: getFoo,
-        methods: ['GET'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: postFoo,
-        methods: ['POST'],
-        domain: 'root',
-        name: 'foo',
-      },
-      {
-        pattern: 'bar/foo',
-        patternMatchers: {},
-        handler: putFoo,
-        methods: ['PUT'],
-        domain: 'root',
-        name: 'bar/foo',
-      },
-      {
-        pattern: 'bar/foo',
-        patternMatchers: {},
-        handler: patchFoo,
-        methods: ['PATCH'],
-        domain: 'root',
-        name: 'bar/foo',
-      },
-      {
-        pattern: 'foo',
-        patternMatchers: {},
-        handler: deleteFoo,
-        methods: ['DELETE'],
-        domain: 'root',
-        name: 'foo',
-      },
+      makeRoute({ pattern: 'foo', handler: getFoo }),
+      makeRoute({ pattern: 'foo', handler: postFoo, methods: ['POST'] }),
+      makeRoute({ pattern: 'bar/foo', handler: putFoo, methods: ['PUT'] }),
+      makeRoute({ pattern: 'bar/foo', handler: patchFoo, methods: ['PATCH'] }),
+      makeRoute({ pattern: 'foo', handler: deleteFoo, methods: ['DELETE'] }),
     ])
   })
 
@@ -352,6 +282,19 @@ test.group('Route Manager', () => {
         },
       },
     })
+  })
+
+  test('find a pre-registered route using url', (assert) => {
+    const manager = new RouteManager()
+
+    manager.get('/foo', function getFoo () {}).as('listFoo')
+    const route = manager.post('/foo/:id', function postFoo () {}).as('storeFoo')
+    manager.commit()
+
+    const expectedRoute = routeToStoreRoute(route.toJSON(), 'POST')
+    assert.deepEqual(manager.find('foo/1', 'POST'), Object.assign(expectedRoute, {
+      params: { id: '1' },
+    }))
   })
 
   test('make url to a route', (assert) => {

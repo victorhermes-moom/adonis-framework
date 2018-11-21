@@ -14,14 +14,14 @@
 import * as encryptorCreator from 'simple-encryptor'
 import { IConfig } from '../Contracts/IConfig'
 import { IEncryption } from '../Contracts/IEncryption'
-import { MissingAppKey } from '../Exceptions'
+import { MissingAppKeyException } from '../Exceptions'
 
 /**
- * Encryption module is used to safely encrypt and decrypt values the crypto module
+ * Encryption module is used to safely encrypt and decrypt values using the crypto module
  * along with `AES-256` cipher.
  *
- * The encryption is done using the `appKey` defined inside `config/app.js` file and
- * an exception is raised, in case `appKey` is missing.
+ * The encryption is done using the `appKey` defined inside `config/app.js` file.
+ * An exception will be raised when `appKey` is missing.
  *
  * This module exposes 2 interfaces to encrypt/encode values.
  *
@@ -36,7 +36,7 @@ export class Encryption implements IEncryption {
 
   constructor (private _config: IConfig) {
     if (!this._config.get('app.appKey')) {
-      throw MissingAppKey.invoke()
+      throw MissingAppKeyException.invoke()
     }
   }
 
@@ -68,12 +68,12 @@ export class Encryption implements IEncryption {
 
   /**
    * Encrypt value using `AES-256` cipher. Optionally, you can generate
-   * the `HMAC`, which is appended to the output. The `HAMC` will
-   * increase the output size by 64 bytes and will be verified
+   * the `HMAC`, which is appended to the output. The `HMAC` will
+   * increase the output size by 64 bytes and will be verified first
    * during `decrypt`.
    *
    * NOTE: This method returns a different output even if the input is same. Consider
-   * using `base64Encode` if you strive for identical output.
+   * using [[base64Encode]] if you strive for identical output.
    *
    * @example
    * ```js

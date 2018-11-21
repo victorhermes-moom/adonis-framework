@@ -598,6 +598,25 @@ test.group('Response', (group) => {
     assert.equal(text, 'Cannot process file')
   })
 
+  test('raise errors as response when file is missing', async (assert) => {
+    const server = httpServer(async (req, res) => {
+      const config = fakeConfig()
+      config.set('app.http.jsonpCallback', 'cb')
+      const request = new Request(req, res, config)
+      const response = new Response(request, res, config)
+
+      try {
+        await response.download(join(appRoot(), 'hello.html'), false, true)
+      } catch (error) {
+        res.writeHead(404)
+        res.end('Custom error during file processing')
+      }
+    })
+
+    const { text } = await supertest(server).get('/').expect(404)
+    assert.equal(text, 'Custom error during file processing')
+  })
+
   test('do not stream file on HEAD calls', async (assert) => {
     // Setup
     await createFile('hello.html', '<p> hello world </p>')

@@ -2,7 +2,7 @@
  * @module main
  */
 
- /**
+ /*
  * @adonisjs/framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -44,7 +44,7 @@ const debug = Debug('adonis:config')
  * The `get` method doesn't raise runtime exceptions when top level objects are missing.
  *
  * ## Extensions
- * By default `.js` files are loaded. However, you can define a custom set of extensions as
+ * By default files ending with `js` extension are loaded. However, you can define a custom set of extensions as
  * an array.
  *
  * ## Parsing config files
@@ -57,7 +57,7 @@ const debug = Debug('adonis:config')
 export class Config implements IConfig {
   private _configCache: object = {}
 
-  constructor (private _configPath: string, private _extensions: string[]) {
+  constructor (private _configPath: string, private _extensions: string[] = ['js']) {
     this.sync()
   }
 
@@ -76,6 +76,7 @@ export class Config implements IConfig {
         recursive: true,
       })
     } catch (error) {
+      /* istanbul ignore else */
       if (error.code !== 'ENOENT') {
         throw error
       }

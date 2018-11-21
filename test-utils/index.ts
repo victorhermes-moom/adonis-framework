@@ -24,6 +24,10 @@ export function appRoot () {
   return join(__dirname, './app')
 }
 
+/**
+ * Creates the env file to be used for testing. Later use `removeFile`
+ * to remove it.
+ */
 export async function createEnvFile (values, filePath = '.env') {
   const contents = Object.keys(values).reduce((result, key) => {
     result += `${key}=${values[key]}\n`
@@ -34,6 +38,9 @@ export async function createEnvFile (values, filePath = '.env') {
   await outputFile(filePath, contents)
 }
 
+/**
+ * Remove the given file from the app root.
+ */
 export async function removeFile (filePath) {
   filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
 
@@ -44,19 +51,31 @@ export async function removeFile (filePath) {
   await remove(filePath)
 }
 
+/**
+ * Removes the app root
+ */
 export async function removeAppRoot () {
   await remove(this.appRoot())
 }
 
+/**
+ * Creates a given file in the app root
+ */
 export async function createFile (filePath, contents) {
   filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
   await outputFile(filePath, contents)
 }
 
+/**
+ * Creates an HTTP server
+ */
 export function httpServer (handler) {
   return createServer(handler)
 }
 
+/**
+ * Returns a fake instance of config provider for testing
+ */
 export function fakeConfig (): IConfig {
   class Config implements IConfig {
     private _configCache = {}
@@ -75,6 +94,9 @@ export function fakeConfig (): IConfig {
   return new Config()
 }
 
+/**
+ * Makes the JSON for a single route
+ */
 export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
   const finalRoute = Object.assign({
     handler: function handler () {},
@@ -89,14 +111,23 @@ export function makeRoute (route: Partial<IRouteJSON>): IRouteJSON {
   return finalRoute
 }
 
+/**
+ * Makes the router instance
+ */
 export function makeRouter (): RouteManager {
   return new RouteManager()
 }
 
+/**
+ * Converts route JSON to route store JSON
+ */
 export function routeToStoreRoute (route, method): IStoreRoute {
   return Object.assign({ method }, omit(route, ['patternMatchers', 'methods']))
 }
 
+/**
+ * Flatten an array of routes, and routes under a group or resource
+ */
 export function flatRoutes (routes) {
   return routes.reduce((result, route) => {
     if (route instanceof RouteGroup) {
@@ -108,6 +139,9 @@ export function flatRoutes (routes) {
   }, [])
 }
 
+/**
+ * Returns fake `req` and `res` objects
+ */
 export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
   return { req: httpMocks.createRequest(), res: httpMocks.createResponse() }
 }

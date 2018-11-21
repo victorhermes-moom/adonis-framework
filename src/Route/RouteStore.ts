@@ -19,13 +19,14 @@ import {
   IRouteStore,
   IMethodList,
   IStoreRoute,
+  ILookedupRoute,
 } from '../Contracts/IRoute'
 
-import { InvalidRoute, IncompleteParams } from '../Exceptions'
+import { InvalidRouteException, IncompleteParamsException } from '../Exceptions'
 
 /**
  * Route store contains the final list of routes and their pattern tokens. The list
- * is not subject to updation and deletion, since it will mess up the order
+ * is not subject for updations or deletions, since it will mess up the order
  * of routes in which they have been defined by the end user.
  *
  * The list structure has to be in the same order as the routes are defined in the
@@ -64,7 +65,7 @@ export class RouteStore implements IRouteStore {
   /**
    * Add a new route to the routes store. The id is used to map route
    * pattern tokens with the route defination and duplicate ids
-   * are not allowed.
+   * for a single domain are not allowed.
    */
   public add (id: string, route: IRouteJSON): this {
     route.methods.forEach((method) => {
@@ -75,7 +76,7 @@ export class RouteStore implements IRouteStore {
        * method
        */
       if (methodList.routes[id]) {
-        throw InvalidRoute.duplicateName(id)
+        throw InvalidRouteException.duplicateName(id)
       }
 
       /**
@@ -126,7 +127,7 @@ export class RouteStore implements IRouteStore {
    * store.find('posts/1', 'blog.adonisjs.com')
    * ```
    */
-  public find (url: string, method: string, domain?: string): IStoreRoute & { params: any } | null {
+  public find (url: string, method: string, domain?: string): ILookedupRoute {
     const methodList = this._getMethodsList(domain || 'root', method)
     const matched = match(url, methodList.tokens)
 
@@ -145,7 +146,7 @@ export class RouteStore implements IRouteStore {
    * of the following values.
    *
    * 1. Route pattern
-   * 2. Route name (defined using Route.as)
+   * 2. Route name (defined using [[Route.as]])
    * 3. Route handler ( Using controller name.method )
    *
    * `null` will be returned when unable to find the Route. If domain is defined,
@@ -156,7 +157,7 @@ export class RouteStore implements IRouteStore {
    *
    * This method will raise exceptions in one of the following situations.
    *
-   * 1. If one of the required param is undefined, null or empty.
+   * 1. If one of the required param is `undefined`, `null` or `empty`.
    * 2. If sequential params are missing. Even if they are optional. For example:
    *
    * ```js
@@ -164,8 +165,8 @@ export class RouteStore implements IRouteStore {
    * ```
    *
    * If you pass value for `slug`, but not for the `id`, then an exception will be raised,
-   * since it impossible to create the correct URL when param at index 0 is missing and
-   * value for index 1 is provided.
+   * since it impossible to create the correct URL when value for `index 0` is missing and
+   * value for `index 1` is provided.
    */
   public make (identifier: string, params: any, domain?: string): string | null {
     const route = this._flatRoutesList.find((route) => {
@@ -192,7 +193,7 @@ export class RouteStore implements IRouteStore {
     if (route.pattern.indexOf(':') > -1) {
       url = route.pattern.split('/').reduce((blocks: string[], block) => {
         if (missedBlock) {
-          throw IncompleteParams.jumpParam(missedBlock, route.pattern)
+          throw IncompleteParamsException.jumpParam(missedBlock, route.pattern)
         }
 
         const param = block.startsWith(':')
@@ -215,7 +216,7 @@ export class RouteStore implements IRouteStore {
         if (params[name]) {
           blocks.push(params[name])
         } else if (!optional) {
-          throw IncompleteParams.missingParam(name, route.pattern)
+          throw IncompleteParamsException.missingParam(name, route.pattern)
         } else {
           missedBlock = name
         }

@@ -10,6 +10,7 @@
 import * as test from 'japa'
 import { RouteGroup } from '../../src/Route/RouteGroup'
 import { Route } from '../../src/Route'
+import { makeRoute } from '../../test-utils'
 
 test.group('Route Group', () => {
   test('prefix routes inside a group', (assert) => {
@@ -19,14 +20,10 @@ test.group('Route Group', () => {
     group.routes.push(new Route('/', ['GET'], getFoo))
     group.prefix('/foo')
 
-    assert.deepEqual(group.routes[0].toJSON(), {
+    assert.deepEqual(group.routes[0].toJSON(), makeRoute({
       pattern: 'foo',
-      patternMatchers: {},
       handler: getFoo,
-      methods: ['GET'],
-      domain: 'root',
-      name: 'foo',
-    })
+    }))
   })
 
   test('define route params regex', (assert) => {
@@ -36,16 +33,13 @@ test.group('Route Group', () => {
     group.routes.push(new Route('/:id', ['GET'], getFoo))
     group.where('id', '[a-z]')
 
-    assert.deepEqual(group.routes[0].toJSON(), {
+    assert.deepEqual(group.routes[0].toJSON(), makeRoute({
       pattern: ':id',
+      handler: getFoo,
       patternMatchers: {
         id: /[a-z]/,
       },
-      handler: getFoo,
-      methods: ['GET'],
-      domain: 'root',
-      name: ':id',
-    })
+    }))
   })
 
   test('define route domain', (assert) => {
@@ -55,13 +49,10 @@ test.group('Route Group', () => {
     group.routes.push(new Route('/:id', ['GET'], getFoo))
     group.domain('foo.com')
 
-    assert.deepEqual(group.routes[0].toJSON(), {
+    assert.deepEqual(group.routes[0].toJSON(), makeRoute({
       pattern: ':id',
-      patternMatchers: {},
       handler: getFoo,
-      methods: ['GET'],
       domain: 'foo.com',
-      name: ':id',
-    })
+    }))
   })
 })

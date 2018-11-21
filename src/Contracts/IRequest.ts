@@ -12,10 +12,12 @@
  */
 
 import { UrlWithStringQuery } from 'url'
-import { IncomingHttpHeaders } from 'http'
+import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http'
 
 export interface IRequest {
   parsedUrl: UrlWithStringQuery
+  request: IncomingMessage
+  response: ServerResponse
   setInitialBody (body: any): void
   updateBody (body: any): void
   updateRawBody (body: string): void

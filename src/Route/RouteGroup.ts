@@ -15,19 +15,16 @@ import { Route } from '../Route'
 import { IRouteGroup } from '../Contracts/IRoute'
 
 /**
- * Route group applies properties to all the routes
- * inside a single group.
- *
- * It's the simplest way to group functionality
+ * Route group allows grouping of routes together and then
+ * apply settings on them in bulk. The get the instance of
+ * this class by calling [[RouteManager.group]] method.
  */
 export class RouteGroup implements IRouteGroup {
   public routes: Route[] = []
 
   /**
-   * Prefix the route with a pattern. The value will be directly
-   * appended to the route pattern.
-   *
-   * Ideally you will define a `prefix` on the [[RouteGroup]]
+   * Prefix all the routes in the group.
+   * @see [[Route.prefix]]
    */
   public prefix (prefix: string): this {
     this.routes.forEach((route) => route.prefix(prefix))
@@ -35,8 +32,8 @@ export class RouteGroup implements IRouteGroup {
   }
 
   /**
-   * Map route to a given domain. The domain itself can be a pattern
-   * using the route style params.
+   * Define domain all the routes in the group.
+   * @see [[Route.domain]]
    */
   public domain (domain: string): this {
     this.routes.forEach((route) => route.domain(domain))
@@ -44,9 +41,8 @@ export class RouteGroup implements IRouteGroup {
   }
 
   /**
-   * Define route params regex to test the url before calling it
-   * a route match. If the regex fails, the route will be
-   * skipped
+   * Define params regex to all routes in the group.
+   * @see [[Route.where]]
    */
   public where (key: string, pattern: string | RegExp): this {
     this.routes.forEach((route) => route.where(key, pattern))

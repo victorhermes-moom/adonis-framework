@@ -2,7 +2,7 @@
  * @module http
  */
 
-/**
+/*
  * @adonisjs/framework
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -10,6 +10,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
+import { ServerResponse } from 'http'
+import { IRequest } from './IRequest'
 
 export type ICastableHeader = string | number | boolean | string[] | number[] | boolean[]
 
@@ -29,6 +32,8 @@ export interface IResponse {
   finished: boolean
   headersSent: boolean
   isPending: boolean
+  request: IRequest
+  response: ServerResponse
   getHeader (key: string): string | string[] | number | undefined
   header (key: string, value: ICastableHeader): this
   append (key: string, value: ICastableHeader): this
@@ -39,7 +44,7 @@ export interface IResponse {
   vary (field: string): this
   setEtag (body: any, weak?: boolean): this
 
-  buildResponseBody (body: any): { body: any, type: IResponseContentType }
+  buildResponseBody (body: any): { body: any, type: IResponseContentType, originalType?: string }
   send (body: any, generateEtag?: boolean): void
   json (body: any, generateEtag?: boolean): void
   jsonp (body: any, callbackName?: string, generateEtag?: boolean): void
