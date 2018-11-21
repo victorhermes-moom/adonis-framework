@@ -95,6 +95,7 @@ export interface IRoute {
   prefix (prefix: string): this
   where (param: string, pattern: string | RegExp): this
   domain (domain: string): this
+  prefixName (name: string): this
   as (name: string)
   toJSON (): IRouteJSON
 }
@@ -105,6 +106,7 @@ export interface IRoute {
 export interface IRouteGroup {
   prefix (prefix: string): this
   where (param: string, pattern: string | RegExp): this
+  prefixName (name: string): this
   domain (domain: string): this
 }
 

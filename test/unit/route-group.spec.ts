@@ -55,4 +55,33 @@ test.group('Route Group', () => {
       domain: 'foo.com',
     }))
   })
+
+  test('prefix names for the routes', (assert) => {
+    const group = new RouteGroup()
+    function getFoo () {}
+
+    group.routes.push(new Route('/:id', ['GET'], getFoo))
+    group.prefixName('guest')
+
+    assert.deepEqual(group.routes[0].toJSON(), makeRoute({
+      pattern: ':id',
+      handler: getFoo,
+      name: 'guest.:id',
+    }))
+  })
+
+  test('do not override the route explicit name during prefix', (assert) => {
+    const group = new RouteGroup()
+    function getFoo () {}
+
+    const route = new Route('/:id', ['GET'], getFoo).as('getUser')
+    group.routes.push(route)
+    group.prefixName('guest')
+
+    assert.deepEqual(group.routes[0].toJSON(), makeRoute({
+      pattern: ':id',
+      handler: getFoo,
+      name: 'guest.getUser',
+    }))
+  })
 })

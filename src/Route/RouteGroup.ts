@@ -32,6 +32,15 @@ export class RouteGroup implements IRouteGroup {
   }
 
   /**
+   * Prefix a string to the name of all the routes.
+   * @see [[Route.prefixName]]
+   */
+  public prefixName (name: string): this {
+    this.routes.forEach((route) => route.prefixName(name))
+    return this
+  }
+
+  /**
    * Define domain all the routes in the group.
    * @see [[Route.domain]]
    */

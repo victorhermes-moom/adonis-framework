@@ -28,6 +28,7 @@ export class Route implements IRoute {
   private _domain: string = 'root'
   private _patternMatchers: IRoutePatternMatcher = {}
   private _name: string = ''
+  private _prefixName: string = ''
 
   constructor (
     private _pattern: string,
@@ -50,6 +51,22 @@ export class Route implements IRoute {
    */
   public as (name: string): this {
     this._name = name
+    return this
+  }
+
+  /**
+   * Prefix the route final name. This method is usually named
+   * on a group of routes to prefix their names in bulk.
+   *
+   * @example
+   * ```js
+   * Route.get('user/:id', () => {}).prefixName('common')
+   *
+   * Route.toJSON().name // common.user/:id
+   * ```
+   */
+  public prefixName (name: string): this {
+    this._prefixName = name
     return this
   }
 
@@ -130,8 +147,13 @@ export class Route implements IRoute {
    * is garbage collected.
    */
   public toJSON (): IRouteJSON {
+    let name = this._name || this._pattern
+    if (this._prefixName) {
+      name = `${this._prefixName}.${name}`
+    }
+
     return {
-      name: this._name || this._pattern,
+      name: name,
       methods: this._methods,
       pattern: this._pattern,
       patternMatchers: this._patternMatchers,
