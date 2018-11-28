@@ -15,9 +15,6 @@ import { IConfig } from '../Contracts/IConfig'
 import * as requireAll from 'require-all'
 import { get, set, mergeWith } from 'lodash'
 
-import Debug from 'debug'
-const debug = Debug('adonis:config')
-
 /**
  * Config module eases the process of using configuration inside your AdonisJs
  * applications.
@@ -66,9 +63,6 @@ export class Config implements IConfig {
    * require files using the `require` method.
    */
   public sync () {
-    debug('sync %s', this._configPath)
-    debug('extensions %o', this._extensions)
-
     try {
       this._configCache = requireAll({
         dirname: this._configPath,
