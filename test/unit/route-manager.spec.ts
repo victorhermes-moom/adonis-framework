@@ -60,7 +60,6 @@ test.group('Route Manager', () => {
               'type': 0,
               'val': 'foo',
               'end': '',
-              'matcher': null,
               'id': 'foo',
             }],
             [{
@@ -68,7 +67,6 @@ test.group('Route Manager', () => {
               'type': 0,
               'val': 'apple',
               'end': '',
-              'matcher': null,
               'id': 'apple',
             }],
           ],
@@ -97,7 +95,6 @@ test.group('Route Manager', () => {
             'type': 0,
             'val': 'foo',
             'end': '',
-            'matcher': null,
             'id': 'foo',
           }]],
           routes: {
@@ -119,7 +116,6 @@ test.group('Route Manager', () => {
             'type': 0,
             'val': 'foo',
             'end': '',
-            'matcher': null,
             'id': 'foo',
           }]],
           routes: {
@@ -193,7 +189,6 @@ test.group('Route Manager', () => {
               'type': 0,
               'val': 'foo',
               'end': '',
-              'matcher': null,
               'id': 'foo',
             }],
             [
@@ -202,7 +197,6 @@ test.group('Route Manager', () => {
                 'type': 0,
                 'val': 'api',
                 'end': '',
-                'matcher': null,
                 'id': 'api/apple',
               },
               {
@@ -210,7 +204,6 @@ test.group('Route Manager', () => {
                 'type': 0,
                 'val': 'apple',
                 'end': '',
-                'matcher': null,
                 'id': 'api/apple',
               },
             ],
@@ -242,7 +235,6 @@ test.group('Route Manager', () => {
                 'type': 0,
                 'val': 'api',
                 'end': '',
-                'matcher': null,
                 'id': 'api/foo',
               },
               {
@@ -250,7 +242,6 @@ test.group('Route Manager', () => {
                 'type': 0,
                 'val': 'foo',
                 'end': '',
-                'matcher': null,
                 'id': 'api/foo',
               },
             ],
@@ -274,7 +265,6 @@ test.group('Route Manager', () => {
             'type': 0,
             'val': 'foo',
             'end': '',
-            'matcher': null,
             'id': 'foo',
           }]],
           routes: {

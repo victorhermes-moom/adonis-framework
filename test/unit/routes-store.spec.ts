@@ -25,8 +25,8 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
-              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: undefined, id: 'foo/:bar' },
             ],
           ],
           routes: {
@@ -63,7 +63,7 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
               { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: /[a-z]/, id: 'foo/:bar' },
             ],
           ],
@@ -92,7 +92,7 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
               { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: /[a-z]/, id: 'foo/:bar' },
             ],
           ],
@@ -116,8 +116,8 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
-              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: undefined, id: 'foo/:bar' },
             ],
           ],
           routes: {
@@ -129,8 +129,8 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
-              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: undefined, id: 'foo/:bar' },
             ],
           ],
           routes: {
@@ -154,8 +154,8 @@ test.group('RouteStore | Add', () => {
         GET: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
-              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: undefined, id: 'foo/:bar' },
             ],
           ],
           routes: {
@@ -165,8 +165,8 @@ test.group('RouteStore | Add', () => {
         HEAD: {
           tokens: [
             [
-              { old: 'foo/:bar', type: 0, val: 'foo', end: '', matcher: null, id: 'foo/:bar' },
-              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: null, id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 0, val: 'foo', end: '', id: 'foo/:bar' },
+              { old: 'foo/:bar', type: 1, val: 'bar', end: '', matcher: undefined, id: 'foo/:bar' },
             ],
           ],
           routes: {

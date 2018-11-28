@@ -16,16 +16,21 @@ export type IAppDirectoriesMap = {
   wsControllers: string,
   middleware: string,
   models: string,
+  listeners: string,
+  [identifier: string]: string,
 }
 
-export type IDirectoriesMap = {
-  app: IAppDirectoriesMap,
+export type ITopLevelMap = {
   config: string,
-  database: string,
   public: string,
   resources: string,
   views: string,
+  database: string,
   tmp: string,
+}
+
+export type IDirectoriesMap = ITopLevelMap & {
+  app: IAppDirectoriesMap,
 }
 
 export interface IHelpers {

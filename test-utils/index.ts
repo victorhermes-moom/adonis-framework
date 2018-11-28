@@ -13,7 +13,7 @@ import * as clearRequire from 'clear-require'
 
 import { createServer, IncomingMessage, ServerResponse } from 'http'
 import { Socket } from 'net'
-import { get, set, pick } from 'lodash'
+import { get, set, pick, merge } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
 import { IRouteJSON, ILookedupRoute } from '../src/Contracts/IRoute'
@@ -152,13 +152,14 @@ export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
   return { req, res }
 }
 
-export function getDefaultDirectories (directories: Partial<IDirectoriesMap>): IDirectoriesMap {
-  return Object.assign({
+export function getDefaultDirectories (directories): IDirectoriesMap {
+  return merge({
     app: {
       httpControllers: 'Controllers/Http',
       wsControllers: 'Controllers/Ws',
       middleware: 'Middleware',
       models: 'Models',
+      listeners: 'Listeners',
     },
     config: 'config',
     database: 'database',
