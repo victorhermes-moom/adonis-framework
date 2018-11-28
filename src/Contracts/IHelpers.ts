@@ -11,4 +11,17 @@
 * file that was distributed with this source code.
 */
 
-export type IDirectoriesMap = { [identifier: string]: string }
+export type IDirectoriesMap = {
+  app: string,
+  config: string,
+  database: string,
+  public: string,
+  resources: string,
+  views: string,
+  tmp: string,
+  httpControllers: string,
+  wsControllers: string,
+  middleware: string,
+  models: string,
+  [identifier: string]: string,
+}

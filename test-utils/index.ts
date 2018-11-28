@@ -17,6 +17,7 @@ import { get, set, pick } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
 import { IRouteJSON, ILookedupRoute } from '../src/Contracts/IRoute'
+import { IDirectoriesMap } from '../src/Contracts/IHelpers'
 import { RouteGroup } from '../src/Route/RouteGroup'
 import { RouteManager } from '../src/Route/RouteManager'
 
@@ -149,4 +150,20 @@ export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
   const req = new IncomingMessage(new Socket())
   const res = new ServerResponse(req)
   return { req, res }
+}
+
+export function getDefaultDirectories (directories: Partial<IDirectoriesMap>): IDirectoriesMap {
+  return Object.assign({
+    app: 'app',
+    config: 'config',
+    database: 'database',
+    public: 'public',
+    resources: 'resources',
+    views: 'resources/views',
+    tmp: 'tmp',
+    httpControllers: 'Controllers/Http',
+    wsControllers: 'Controllers/Ws',
+    middleware: 'Middleware',
+    models: 'Models',
+  }, directories)
 }
