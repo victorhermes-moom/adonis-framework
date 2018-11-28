@@ -14,14 +14,14 @@
 import { join } from 'path'
 
 import { IIoC } from '@adonisjs/fold/build/src/Contracts'
-import { IDirectoriesMap } from '../Contracts/IHelpers'
+import { IDirectoriesMap, IHelpers } from '../Contracts/IHelpers'
 import { RuntimeException } from '../Exceptions'
 
 /**
  * Helpers module provides some quick methods to create paths to certain directories,
  * make absolute namespaces from relative namespaces and so on.
  */
-export class Helpers {
+export class Helpers implements IHelpers {
   constructor (
     private _appRoot: string,
     private _ioc: IIoC,
@@ -29,10 +29,10 @@ export class Helpers {
   ) {}
 
   /**
-   * Make path to a given directory by providing a base path
+   * Make path to a given directory from the application root
    */
-  private _makePath (basePath: string, ...paths: string[]): string {
-    return paths && paths.length ? join(basePath, ...paths) : basePath
+  public makePath (...paths: string[]): string {
+    return paths && paths.length ? join(this._appRoot, ...paths) : this._appRoot
   }
 
   /**
@@ -46,8 +46,8 @@ export class Helpers {
    * Helpers.appRoot('start/routes.js')
    * ```
    */
-  public appRoot (...paths: string[]): string {
-    return this._makePath(this._appRoot, ...paths)
+  public appRoot (): string {
+    return this._appRoot
   }
 
   /**
@@ -62,7 +62,7 @@ export class Helpers {
    * ```
    */
   public publicPath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.public, ...paths)
+    return this.makePath(this.directories.public, ...paths)
   }
 
   /**
@@ -77,7 +77,7 @@ export class Helpers {
    * ```
    */
   public configPath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.config, ...paths)
+    return this.makePath(this.directories.config, ...paths)
   }
 
   /**
@@ -92,7 +92,7 @@ export class Helpers {
    * ```
    */
   public resourcesPath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.resources, ...paths)
+    return this.makePath(this.directories.resources, ...paths)
   }
 
   /**
@@ -140,7 +140,7 @@ export class Helpers {
    * ```
    */
   public databasePath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.database, ...paths)
+    return this.makePath(this.directories.database, ...paths)
   }
 
   /**
@@ -156,7 +156,7 @@ export class Helpers {
    * ```
    */
   public viewsPath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.views, ...paths)
+    return this.makePath(this.directories.views, ...paths)
   }
 
   /**
@@ -172,7 +172,7 @@ export class Helpers {
    * ```
    */
   public tmpPath (...paths: string[]): string {
-    return this._makePath(this._appRoot, this.directories.tmp, ...paths)
+    return this.makePath(this.directories.tmp, ...paths)
   }
 
   /**
@@ -197,7 +197,7 @@ export class Helpers {
       return namespace.slice(1)
     }
 
-    const directory = this.directories[directoryIdentifier]
+    const directory = this.directories.app[directoryIdentifier]
     if (!directory) {
       throw new RuntimeException(`Conventional directory for ${directoryIdentifier} is not defined`)
     }

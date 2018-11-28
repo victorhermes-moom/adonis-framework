@@ -154,16 +154,17 @@ export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
 
 export function getDefaultDirectories (directories: Partial<IDirectoriesMap>): IDirectoriesMap {
   return Object.assign({
-    app: 'app',
+    app: {
+      httpControllers: 'Controllers/Http',
+      wsControllers: 'Controllers/Ws',
+      middleware: 'Middleware',
+      models: 'Models',
+    },
     config: 'config',
     database: 'database',
     public: 'public',
     resources: 'resources',
     views: 'resources/views',
     tmp: 'tmp',
-    httpControllers: 'Controllers/Http',
-    wsControllers: 'Controllers/Ws',
-    middleware: 'Middleware',
-    models: 'Models',
   }, directories)
 }
