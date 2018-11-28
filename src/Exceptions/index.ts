@@ -14,17 +14,6 @@
 import { RuntimeException } from '@adonisjs/generic-exceptions'
 
 /**
- * Missing is raised when `.env` file is missing from the user defined
- * or default location.
- */
-export class MissingEnvFileException extends RuntimeException {
-  public static invoke (filePath: string) {
-    const message = `The ${filePath} file is missing`
-    return new this(message, 500, 'E_MISSING_ENV_FILE')
-  }
-}
-
-/**
  * Exception is raised when `appKey` is missing inside the config file
  */
 export class MissingAppKeyException extends RuntimeException {
@@ -68,3 +57,27 @@ export class IncompleteParamsException extends RuntimeException {
     return new this(`${name} param is required to make url for ${pattern} route`, 500, 'E_CANNOT_JUMP_PARAM')
   }
 }
+
+/**
+ * Exception raised when certain required files are missing
+ */
+export class MissingFileException extends RuntimeException {
+  /**
+   * Raised when package.json file is missing in the project
+   * root
+   */
+  public static missingPackageFile () {
+    const message = 'AdonisJs projects must have a package.json file app root'
+    return new this(message, 500, 'E_MISSING_PACKAGE_FILE')
+  }
+
+  /**
+   * Raised when `.env` file is missing
+   */
+  public static missingEnvFile (filePath: string) {
+    const message = `The ${filePath} file is missing`
+    return new this(message, 500, 'E_MISSING_ENV_FILE')
+  }
+}
+
+export { RuntimeException }

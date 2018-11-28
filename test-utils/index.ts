@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { join, isAbsolute } from 'path'
+import { join, isAbsolute, extname } from 'path'
 import { outputFile, remove } from 'fs-extra'
 import * as clearRequire from 'clear-require'
 import * as httpMocks from 'node-mocks-http'
@@ -44,7 +44,7 @@ export async function createEnvFile (values, filePath = '.env') {
 export async function removeFile (filePath) {
   filePath = isAbsolute(filePath) ? filePath : join(appRoot(), filePath)
 
-  if (filePath.endsWith('.js') || filePath.endsWith('.ts')) {
+  if (['.js', '.ts', '.json'].indexOf(extname(filePath)) > -1) {
     clearRequire(filePath)
   }
 
