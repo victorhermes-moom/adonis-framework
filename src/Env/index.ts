@@ -18,7 +18,7 @@ import { RuntimeException } from '@adonisjs/generic-exceptions'
 
 import { IEnv } from '../Contracts/IEnv'
 import { trySync } from '../../lib/utils'
-import { MissingEnvFileException } from '../Exceptions'
+import { MissingFileException } from '../Exceptions'
 
 import Debug from 'debug'
 const debug = Debug('adonis:env')
@@ -92,7 +92,7 @@ export class Env implements IEnv {
      * Return with error (if any)
      */
     if (error) {
-      const exception = error.code === 'ENOENT' ? MissingEnvFileException.invoke(filePath) : error
+      const exception = error.code === 'ENOENT' ? MissingFileException.missingEnvFile(filePath) : error
       return { error: exception }
     }
 

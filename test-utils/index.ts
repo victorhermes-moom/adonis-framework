@@ -80,7 +80,7 @@ export function fakeConfig (): IConfig {
   class Config implements IConfig {
     private _configCache = {}
 
-    public get (key, defaultValue) {
+    public get (key, defaultValue?) {
       return get(this._configCache, key, defaultValue)
     }
 
@@ -88,7 +88,10 @@ export function fakeConfig (): IConfig {
       set(this._configCache, key, value)
     }
     public sync () {}
-    public merge () {}
+
+    public merge (key, defaults) {
+      return Object.assign(defaults, this.get(key)!)
+    }
   }
 
   return new Config()
