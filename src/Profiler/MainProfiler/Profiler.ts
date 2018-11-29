@@ -18,9 +18,8 @@ import shared from '../shared'
 
 import {
   IProfiler,
-  ISubscriberFn,
   IProfilerRowPacket,
-  IProfilerConfig,
+  IProfilerManager,
 } from '../../Contracts/IProfiler'
 
 /**
@@ -37,27 +36,28 @@ import {
  */
 export class Profiler implements IProfiler {
   private _id = uniqid()
+  private _timestamp = Date.now()
+  private _start = process.hrtime()
 
   constructor (
     private _label: string,
-    private _subscriber: ISubscriberFn,
-    private _config: IProfilerConfig,
+    private _manager: IProfilerManager,
+    private _data?: any,
     private _parentId?: string,
-  ) {
-    this._subscriber(this._makeLogPacket('start'))
-  }
+  ) {}
 
   /**
    * Makes the log packet for the row log
    */
-  private _makeLogPacket (phase): IProfilerRowPacket {
+  private _makeLogPacket (): IProfilerRowPacket {
     return {
       id: this._id,
       type: 'row',
       label: this._label,
       parent_id: this._parentId,
-      phase: phase,
-      time: process.hrtime(),
+      timestamp: this._timestamp,
+      data: this._data || {},
+      duration: process.hrtime(this._start),
     }
   }
 
@@ -66,8 +66,8 @@ export class Profiler implements IProfiler {
    * `end` on the action instance for the log to appear.
    */
   public profile (label: string, data?: any) {
-    if (shared.isEnabled(label, this._config)) {
-      return new ProfilerAction(this._id, label, this._subscriber, data)
+    if (shared.isEnabled(label, this._manager.config)) {
+      return new ProfilerAction(this._id, label, this._manager.subscriber, data)
     }
 
     return shared.dummyAction
@@ -77,17 +77,21 @@ export class Profiler implements IProfiler {
    * End the profiler instance by emitting end lop packet. After
    * this all profiling calls will be considered overflows
    */
-  public end () {
-    this._subscriber(this._makeLogPacket('end'))
+  public end (data?: any) {
+    if (data) {
+      this._data = Object.assign({}, this._data, data)
+    }
+
+    this._manager.subscriber(this._makeLogPacket())
   }
 
   /**
    * Get a new child logger. Child logger will emit a new row
    * in the events timeline
    */
-  public child (label: string): IProfiler {
-    if (shared.isEnabled(label, this._config)) {
-      return new Profiler(label, this._subscriber, this._config, this._id)
+  public child (label: string, data?: any): IProfiler {
+    if (shared.isEnabled(label, this._manager.config)) {
+      return new Profiler(label, this._manager, data, this._id)
     }
 
     return shared.dummyProfiler

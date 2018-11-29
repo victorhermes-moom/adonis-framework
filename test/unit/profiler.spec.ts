@@ -100,13 +100,13 @@ test.group('Profiler | profile', (group) => {
 
     profiler.subscribe((log: IProfilerRowPacket) => {
       assert.equal(log.label, 'http request')
+      assert.equal(log.type, 'row')
       assert.isUndefined(log.parent_id)
       assert.isDefined(log.id)
-      assert.equal(log.phase, 'start')
       assert.equal(log.type, 'row')
     })
 
-    profiler.new('http request')
+    profiler.create('http request').end()
   })
 
   test('profile actions inside a row', (assert) => {
@@ -118,21 +118,16 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const action = profiler.profile('find route')
     action.end()
     profiler.end()
 
-    assert.lengthOf(stack, 3)
-    assert.equal(stack[0].phase, 'start')
-    assert.equal(stack[0].type, 'row')
+    assert.lengthOf(stack, 2)
+    assert.equal(stack[0].parent_id, stack[1].id)
+    assert.equal(stack[0].type, 'action')
 
-    assert.equal(stack[1].parent_id, stack[0].id)
-    assert.equal(stack[1].type, 'action')
-
-    assert.equal(stack[2].id, stack[0].id)
-    assert.equal(stack[2].phase, 'end')
-    assert.equal(stack[0].type, 'row')
+    assert.equal(stack[1].type, 'row')
   })
 
   test('do not profile when label is blacklisted', (assert) => {
@@ -147,18 +142,13 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const action = profiler.profile('find route')
     action.end()
     profiler.end()
 
-    assert.lengthOf(stack, 2)
-    assert.equal(stack[0].phase, 'start')
+    assert.lengthOf(stack, 1)
     assert.equal(stack[0].type, 'row')
-
-    assert.equal(stack[1].id, stack[0].id)
-    assert.equal(stack[1].phase, 'end')
-    assert.equal(stack[1].type, 'row')
   })
 
   test('do not log when parent is blacklisted, even if childs are not', (assert) => {
@@ -173,7 +163,7 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const action = profiler.profile('find route')
 
     action.end()
@@ -194,13 +184,13 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const action = profiler.profile('find route', { url: '/foo' })
 
     action.end()
     profiler.end()
 
-    assert.deepEqual(stack[1].data, { url: '/foo' })
+    assert.deepEqual(stack[0].data, { url: '/foo' })
   })
 
   test('merge ending data', (assert) => {
@@ -215,13 +205,84 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const action = profiler.profile('find route', { url: '/foo' })
 
     action.end({ method: 'GET' })
     profiler.end()
 
-    assert.deepEqual(stack[1].data, { url: '/foo', method: 'GET' })
+    assert.deepEqual(stack[0].data, { url: '/foo', method: 'GET' })
+  })
+
+  test('log row with data', (assert) => {
+    const stack: any[] = []
+
+    const config = fakeConfig()
+    config.set('app.profiler', {
+      whitelist: [],
+      blacklist: [],
+    })
+
+    const profileManager = new ProfilerManager(config)
+    profileManager.subscribe((log) => (stack.push(log)))
+
+    const profiler = profileManager.create('http request', { url: '/foo' })
+    profiler.end()
+    assert.deepEqual(stack[0].data, { url: '/foo' })
+  })
+
+  test('merge row data with end data', (assert) => {
+    const stack: any[] = []
+
+    const config = fakeConfig()
+    config.set('app.profiler', {
+      whitelist: [],
+      blacklist: [],
+    })
+
+    const profileManager = new ProfilerManager(config)
+    profileManager.subscribe((log) => (stack.push(log)))
+
+    const profiler = profileManager.create('http request', { url: '/foo' })
+    profiler.end({ statusCode: 200 })
+    assert.deepEqual(stack[0].data, { url: '/foo', statusCode: 200 })
+  })
+
+  test('merge row data with end data when initial data is undefined', (assert) => {
+    const stack: any[] = []
+
+    const config = fakeConfig()
+    config.set('app.profiler', {
+      whitelist: [],
+      blacklist: [],
+    })
+
+    const profileManager = new ProfilerManager(config)
+    profileManager.subscribe((log) => (stack.push(log)))
+
+    const profiler = profileManager.create('http request')
+    profiler.end({ statusCode: 200 })
+    assert.deepEqual(stack[0].data, { statusCode: 200 })
+  })
+
+  test('create child profiler with data', (assert) => {
+    const stack: any[] = []
+
+    const config = fakeConfig()
+    config.set('app.profiler', {
+      whitelist: [],
+      blacklist: [],
+    })
+
+    const profileManager = new ProfilerManager(config)
+    profileManager.subscribe((log) => (stack.push(log)))
+
+    const profiler = profileManager.create('http request')
+    const child = profiler.child('controller', { handler: 'AuthController.handle' })
+    child.end()
+    profiler.end()
+
+    assert.deepEqual(stack[0].data, { handler: 'AuthController.handle' })
   })
 
   test('create child profiler', (assert) => {
@@ -236,28 +297,18 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const child = profiler.child('controller')
 
     child.end()
     profiler.end()
 
-    assert.lengthOf(stack, 4)
+    assert.lengthOf(stack, 2)
     assert.equal(stack[0].type, 'row')
-    assert.isUndefined(stack[0].parent_id)
-    assert.equal(stack[0].phase, 'start')
+    assert.equal(stack[0].parent_id, stack[1].id)
 
     assert.equal(stack[1].type, 'row')
-    assert.equal(stack[1].parent_id, stack[0].id)
-    assert.equal(stack[1].phase, 'start')
-
-    assert.equal(stack[2].type, 'row')
-    assert.equal(stack[2].parent_id, stack[0].id)
-    assert.equal(stack[2].phase, 'end')
-
-    assert.equal(stack[3].type, 'row')
-    assert.isUndefined(stack[3].parent_id)
-    assert.equal(stack[3].phase, 'end')
+    assert.isUndefined(stack[1].parent_id)
   })
 
   test('do not create child profiler when is black listed', (assert) => {
@@ -272,7 +323,7 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const child = profiler.child('controller')
     const user = child.profile('fetch:user')
 
@@ -280,14 +331,9 @@ test.group('Profiler | profile', (group) => {
     child.end()
     profiler.end()
 
-    assert.lengthOf(stack, 2)
+    assert.lengthOf(stack, 1)
     assert.equal(stack[0].type, 'row')
     assert.isUndefined(stack[0].parent_id)
-    assert.equal(stack[0].phase, 'start')
-
-    assert.equal(stack[1].type, 'row')
-    assert.isUndefined(stack[1].parent_id)
-    assert.equal(stack[1].phase, 'end')
   })
 
   test('do not create child profiler when is top level profiler is blacklisted', (assert) => {
@@ -302,7 +348,7 @@ test.group('Profiler | profile', (group) => {
     const profileManager = new ProfilerManager(config)
     profileManager.subscribe((log) => (stack.push(log)))
 
-    const profiler = profileManager.new('http request')
+    const profiler = profileManager.create('http request')
     const child = profiler.child('controller')
     const user = child.profile('fetch:user')
 

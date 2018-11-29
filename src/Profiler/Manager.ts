@@ -14,7 +14,12 @@
 import shared from './shared'
 import { Profiler } from './MainProfiler/Profiler'
 import { IConfig } from '../Contracts/IConfig'
-import { ISubscriberFn, IProfiler, IProfilerConfig } from '../Contracts/IProfiler'
+import {
+  ISubscriberFn,
+  IProfiler,
+  IProfilerConfig,
+  IProfilerManager,
+} from '../Contracts/IProfiler'
 
 /**
  * Default config to use when original is missing or
@@ -28,23 +33,23 @@ const DEFAULT_CONFIG = {
 
 /**
  * Profile manager serves as the public interface to create new profiler
- * instances.
+ * instances to profile code with timings.
  */
-export class ProfilerManager {
-  private _subscriber: ISubscriberFn
-  private _config: IProfilerConfig
+export class ProfilerManager implements IProfilerManager {
+  public subscriber: ISubscriberFn
+  public config: IProfilerConfig
 
   constructor (config: IConfig) {
-    this._config = config.merge('app.profiler', DEFAULT_CONFIG)
+    this.config = config.merge('app.profiler', DEFAULT_CONFIG)
   }
 
   /**
    * Get a new profiler instance. Each profiler instance logs
    * a new row
    */
-  public new (label: string): IProfiler {
-    if (shared.isEnabled(label, this._config)) {
-      return new Profiler(label, this._subscriber, this._config)
+  public create (label: string, data?: any): IProfiler {
+    if (shared.isEnabled(label, this.config)) {
+      return new Profiler(label, this, data)
     }
 
     return shared.dummyProfiler
@@ -57,6 +62,6 @@ export class ProfilerManager {
    * subscriber
    */
   public subscribe (subscriber: ISubscriberFn): void {
-    this._subscriber = subscriber
+    this.subscriber = subscriber
   }
 }

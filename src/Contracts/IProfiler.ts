@@ -21,11 +21,11 @@ export type ISubscriberFn = (log: IProfilerActionPacket | IProfilerRowPacket) =>
  * an action
  */
 export type IProfilerActionPacket = {
-  parent_id: string,
-  label: string,
+  row_id: string,
   type: 'action',
-  start: [number, number],
-  end: [number, number],
+  label: string,
+  timestamp: number,
+  duration: [number, number],
   data: any,
 }
 
@@ -37,8 +37,9 @@ export type IProfilerRowPacket = {
   parent_id?: string,
   type: 'row',
   label: string,
-  phase: 'start' | 'end',
-  time: [number, number],
+  timestamp: number,
+  duration: [number, number],
+  data: any,
 }
 
 /**
@@ -62,7 +63,17 @@ export interface IProfilerAction {
  * Profile interface
  */
 export interface IProfiler {
-  child (label: string): IProfiler,
+  child (label: string, data?: any): IProfiler,
   profile (label: string, data?: any),
-  end (),
+  end (data?: any),
+}
+
+/**
+ * Manager interface
+ */
+export interface IProfilerManager {
+  subscriber: ISubscriberFn,
+  config: IProfilerConfig,
+  create (label: string, data?: any): IProfiler,
+  subscribe (subscriber: ISubscriberFn): void,
 }

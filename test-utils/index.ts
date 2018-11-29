@@ -10,9 +10,9 @@
 import { join, isAbsolute, extname } from 'path'
 import { outputFile, remove } from 'fs-extra'
 import * as clearRequire from 'clear-require'
-import * as httpMocks from 'node-mocks-http'
 
 import { createServer, IncomingMessage, ServerResponse } from 'http'
+import { Socket } from 'net'
 import { get, set, pick } from 'lodash'
 
 import { IConfig } from '../src/Contracts/IConfig'
@@ -146,5 +146,7 @@ export function flatRoutes (routes) {
  * Returns fake `req` and `res` objects
  */
 export function fakeReqRes (): { req: IncomingMessage, res: ServerResponse } {
-  return { req: httpMocks.createRequest(), res: httpMocks.createResponse() }
+  const req = new IncomingMessage(new Socket())
+  const res = new ServerResponse(req)
+  return { req, res }
 }
