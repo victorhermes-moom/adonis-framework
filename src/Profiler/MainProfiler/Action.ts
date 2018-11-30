@@ -27,6 +27,7 @@ import {
  */
 export class ProfilerAction implements IProfilerAction {
   private _start = process.hrtime()
+  private _timestamp = Date.now()
 
   constructor (
     private _parentId: string,
@@ -40,11 +41,11 @@ export class ProfilerAction implements IProfilerAction {
    */
   private _makePacket (): IProfilerActionPacket {
     return {
-      parent_id: this._parentId,
+      row_id: this._parentId,
       type: 'action',
       label: this._label,
-      start: this._start,
-      end: process.hrtime(),
+      timestamp: this._timestamp,
+      duration: process.hrtime(this._start),
       data: this._data || {},
     }
   }

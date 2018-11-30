@@ -124,7 +124,7 @@ test.group('Profiler | profile', (group) => {
     profiler.end()
 
     assert.lengthOf(stack, 2)
-    assert.equal(stack[0].parent_id, stack[1].id)
+    assert.equal(stack[0].row_id, stack[1].id)
     assert.equal(stack[0].type, 'action')
 
     assert.equal(stack[1].type, 'row')
