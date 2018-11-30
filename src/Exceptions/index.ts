@@ -11,7 +11,7 @@
  * file that was distributed with this source code.
  */
 
-import { RuntimeException } from '@adonisjs/generic-exceptions'
+import { RuntimeException, HttpException as GEHttpException } from '@adonisjs/generic-exceptions'
 
 /**
  * Exception is raised when `appKey` is missing inside the config file
@@ -77,6 +77,12 @@ export class MissingFileException extends RuntimeException {
   public static missingEnvFile (filePath: string) {
     const message = `The ${filePath} file is missing`
     return new this(message, 500, 'E_MISSING_ENV_FILE')
+  }
+}
+
+export class HttpException extends GEHttpException {
+  public static routeNotFound (url: string) {
+    return new this(`Route not found for ${url}`, 404, 'E_ROUTE_NOT_FOUND')
   }
 }
 
