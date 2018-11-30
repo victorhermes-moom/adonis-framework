@@ -30,9 +30,9 @@ const dummyAction = new DummyProfilerAction()
 const dummyProfiler = new DummyProfiler(dummyAction)
 
 /**
- * Finding if a particular label is enabled or not for profiling
+ * Finding if a particular action is enabled or not for profiling
  */
-function isEnabled (label: string, config: IProfilerConfig) {
+function isEnabled (action: string, config: IProfilerConfig) {
   if (!config.enabled) {
     return false
   }
@@ -41,14 +41,14 @@ function isEnabled (label: string, config: IProfilerConfig) {
    * If white list is empty, then check for blacklist
    */
   if (config.whitelist.length === 0) {
-    return config.blacklist.indexOf(label) === -1
+    return config.blacklist.indexOf(action) === -1
   }
 
   /**
    * Otherwise check for whitelist only. We can check for `whitelist` and
    * `blacklist` both here, but not 100% sure.
    */
-  return config.whitelist.indexOf(label) > -1
+  return config.whitelist.indexOf(action) > -1
 }
 
 export default {

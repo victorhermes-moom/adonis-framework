@@ -40,7 +40,7 @@ export class Profiler implements IProfiler {
   private _start = process.hrtime()
 
   constructor (
-    private _label: string,
+    private _action: string,
     private _manager: IProfilerManager,
     private _data?: any,
     private _parentId?: string,
@@ -53,7 +53,7 @@ export class Profiler implements IProfiler {
     return {
       id: this._id,
       type: 'row',
-      label: this._label,
+      action: this._action,
       parent_id: this._parentId,
       timestamp: this._timestamp,
       data: this._data || {},
@@ -65,9 +65,9 @@ export class Profiler implements IProfiler {
    * Get a new profile action instance. Make sure to call
    * `end` on the action instance for the log to appear.
    */
-  public profile (label: string, data?: any) {
-    if (shared.isEnabled(label, this._manager.config)) {
-      return new ProfilerAction(this._id, label, this._manager.subscriber, data)
+  public profile (action: string, data?: any) {
+    if (shared.isEnabled(action, this._manager.config)) {
+      return new ProfilerAction(this._id, action, this._manager.subscriber, data)
     }
 
     return shared.dummyAction
@@ -89,9 +89,9 @@ export class Profiler implements IProfiler {
    * Get a new child logger. Child logger will emit a new row
    * in the events timeline
    */
-  public child (label: string, data?: any): IProfiler {
-    if (shared.isEnabled(label, this._manager.config)) {
-      return new Profiler(label, this._manager, data, this._id)
+  public child (action: string, data?: any): IProfiler {
+    if (shared.isEnabled(action, this._manager.config)) {
+      return new Profiler(action, this._manager, data, this._id)
     }
 
     return shared.dummyProfiler

@@ -99,7 +99,7 @@ test.group('Profiler | profile', (group) => {
     const profiler = new ProfilerManager(config)
 
     profiler.subscribe((log: IProfilerRowPacket) => {
-      assert.equal(log.label, 'http request')
+      assert.equal(log.action, 'http request')
       assert.equal(log.type, 'row')
       assert.isUndefined(log.parent_id)
       assert.isDefined(log.id)

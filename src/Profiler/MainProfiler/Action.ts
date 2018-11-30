@@ -31,7 +31,7 @@ export class ProfilerAction implements IProfilerAction {
 
   constructor (
     private _parentId: string,
-    private _label: string,
+    private _action: string,
     private _subscriber: ISubscriberFn,
     private _data?: any,
   ) {}
@@ -43,7 +43,7 @@ export class ProfilerAction implements IProfilerAction {
     return {
       row_id: this._parentId,
       type: 'action',
-      label: this._label,
+      action: this._action,
       timestamp: this._timestamp,
       duration: process.hrtime(this._start),
       data: this._data || {},
