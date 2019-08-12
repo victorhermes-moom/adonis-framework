@@ -1,5 +1,7 @@
 # Adonis Framework :triangular_ruler:
 
+This repo contains the core modules for the AdonisJs framework. You must checkout the source code or the API docs on official website to learn more.
+
 <br />
 <hr />
 <br />
